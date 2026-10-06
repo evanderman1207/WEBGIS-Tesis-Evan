@@ -810,7 +810,58 @@
       #hdr-logo { display: none !important; }
       #floating-toggle-left-btn span, #floating-toggle-right-btn span { font-size: 10px !important; }
     }
-  </style>
+  
+    /* ============================================================== */
+    /* MOBILE v2 (< 768px): KONTROL ATAS SATU BARIS, SKALA KOMPAK      */
+    /* [Lapisan] [ Pilih Wilayah ▾ ] [Atribut]  -> tidak saling tumpuk */
+    /* ============================================================== */
+    @media (max-width: 767.98px) {
+      /* Dua tombol mengambang jadi ikon 42x42 di kiri & kanan */
+      #floating-toggle-left-btn, #floating-toggle-right-btn {
+        top: 8px !important;
+        width: 42px !important; height: 42px !important;
+        padding: 0 !important; gap: 0 !important;
+        justify-content: center !important; border-radius: 14px !important;
+      }
+      #floating-toggle-left-btn span, #floating-toggle-right-btn span { display: none !important; }
+      #floating-toggle-left-btn i, #floating-toggle-right-btn i { font-size: 16px !important; }
+      #floating-toggle-left-btn { left: 8px !important; }
+      #floating-toggle-right-btn { right: 8px !important; }
+
+      /* Bar Lompat Wilayah berada di antara dua tombol, satu baris yang sama */
+      #quick-jump-bar {
+        top: 8px !important;
+        left: 58px !important; right: 58px !important;
+        width: auto !important; height: 42px !important;
+        padding: 4px 6px !important; gap: 6px !important;
+        border-radius: 14px !important; box-sizing: border-box !important;
+      }
+      #quick-jump-bar > div:first-child { padding: 0 2px !important; }
+      #quick-jump-bar select { height: 32px; padding-top: 0 !important; padding-bottom: 0 !important; text-overflow: ellipsis; }
+      #quick-jump-bar > .relative > i { top: 50% !important; transform: translateY(-50%); }
+      /* Tombol Reset sudah ada di header -> sembunyikan agar tidak dobel */
+      #quick-jump-bar > button { display: none !important; }
+
+      /* Skala peta: kompak, tidak terpotong di tepi kanan */
+      .leaflet-bottom.leaflet-left {
+        left: 8px !important; right: auto !important;
+        bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+        max-width: calc(100vw - 16px) !important;
+      }
+      .gis-modern-scale-control, .leaflet-control-scale {
+        width: 140px !important; max-width: 140px !important;
+        margin: 0 !important; left: 0 !important; right: auto !important;
+      }
+      .gis-scale-glass-card { padding: 6px 8px 8px 8px !important; gap: 3px !important; overflow: hidden; }
+      .gis-scale-header { gap: 4px; min-width: 0; }
+      .gis-scale-unit-tag { display: none !important; }
+      .gis-scale-zoom-badge { font-size: 9px; gap: 4px; min-width: 0; overflow: hidden; }
+      .gis-scale-zoom-badge .gis-zoom-text { overflow: hidden; text-overflow: ellipsis; }
+    }
+    @media (max-width: 359.98px) {
+      #quick-jump-bar > div:first-child { display: none !important; }
+    }
+</style>
 </head>
 <body class="h-full w-full bg-slate-950 text-slate-100 overflow-hidden font-sans antialiased relative flex flex-col">
 
