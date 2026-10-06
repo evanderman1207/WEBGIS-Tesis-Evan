@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>WebGIS Analisis Tesis Evan – Kotawaringin Timur 2025</title>
   <meta name="description" content="Sistem Informasi Geospasial Analisis Spasial Klaster Kemiskinan dan Risiko Bencana Kabupaten Kotawaringin Timur – Evan (2025)." />
   <meta name="author" content="Evan" />
@@ -730,6 +730,86 @@
       z-index: 12 !important;
       opacity: 0.88;
     }
+
+    /* ============================================================== */
+    /* PERBAIKAN TAMPILAN MOBILE (RAPI, TIDAK TERTUMPUK)               */
+    /* ============================================================== */
+    html, body { height: 100dvh; }
+    #sidebar-scrim {
+      position: fixed; inset: 0; z-index: 35;
+      background: rgba(2, 6, 23, 0.55);
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transition: opacity .3s ease, visibility .3s ease;
+    }
+    @media (max-width: 1023.98px) {
+      #sidebar-scrim.show { opacity: 1; visibility: visible; pointer-events: auto; }
+      /* Sidebar menjadi panel penuh di bawah header, aman dari notch / bar browser */
+      #left-sidebar, #right-sidebar {
+        top: 64px !important;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+        max-width: none !important;
+      }
+      #left-sidebar  { left: 8px !important;  width: min(420px, calc(100vw - 16px)) !important; }
+      #right-sidebar { right: 8px !important; left: auto !important; width: min(420px, calc(100vw - 16px)) !important; }
+      /* Tombol toggle di header sama dengan tombol mengambang -> sembunyikan agar tidak dobel */
+      #toggle-left-sidebar-btn, #toggle-right-sidebar-btn { display: none !important; }
+    }
+
+    @media (max-width: 767.98px) {
+      /* ---------- Header ringkas ---------- */
+      header { padding-left: 10px !important; padding-right: 10px !important; gap: 8px; }
+      #hdr-left { flex: 1 1 auto; }
+      #hdr-logo { width: 28px !important; height: 28px !important; flex-shrink: 0; }
+      #hdr-title { font-size: 12px !important; line-height: 1.15; }
+      #hdr-title span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      #hdr-subtitle { display: none !important; }
+      #hdr-right { gap: 6px !important; }
+      #weather-chip { padding: 4px 8px !important; gap: 6px !important; }
+      #weather-chip .wx-label, #weather-chip .wx-wind { display: none !important; }
+      #weather-chip > div:first-child { width: 24px !important; height: 24px !important; font-size: 13px !important; }
+      #header-wind-btn { padding: 6px 8px !important; }
+      #header-wind-btn #header-wind-power-dot,
+      #header-wind-btn > .fa-chevron-down { display: none !important; }
+      #btn-reset-all, #btn-open-about { padding: 6px 8px !important; }
+      /* Pop-up angin header tidak boleh keluar layar */
+      #header-wind-popup { position: fixed !important; top: 60px !important; left: 8px !important; right: 8px !important; width: auto !important; }
+
+      /* ---------- Tombol mengambang & Lompat Wilayah ---------- */
+      #floating-toggle-left-btn, #floating-toggle-right-btn { top: 8px !important; padding: 7px 10px !important; }
+      #floating-toggle-left-btn { left: 8px !important; }
+      #floating-toggle-right-btn { right: 8px !important; }
+      #quick-jump-bar {
+        display: flex !important;
+        top: 52px !important; left: 8px !important; right: 8px !important;
+        transform: none !important; max-width: none !important; width: auto !important;
+        padding: 5px !important; gap: 6px !important;
+      }
+      #quick-jump-bar > div:first-child { padding-left: 4px !important; padding-right: 0 !important; }
+      #quick-jump-bar > .relative { flex: 1 1 auto; min-width: 0; }
+      #quick-jump-bar select { width: 100%; font-size: 16px; padding-top: 5px; padding-bottom: 5px; } /* 16px: cegah auto-zoom iOS */
+      #quick-jump-bar > .h-4 { display: none; }
+
+      /* ---------- Skala peta lebih kecil ---------- */
+      .gis-modern-scale-control, .leaflet-control-scale { width: 150px !important; max-width: 150px !important; }
+      .leaflet-bottom.leaflet-left { right: 8px !important; bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important; }
+
+      /* ---------- Popup peta & modal ---------- */
+      .leaflet-popup-content { max-width: calc(100vw - 72px) !important; width: auto !important; }
+      .leaflet-popup-content > div { max-width: 100% !important; box-sizing: border-box; }
+      #about-modal, #weather-modal, #export-password-modal { padding: 8px !important; align-items: flex-end !important; }
+      #about-modal > div, #weather-modal > div, #export-password-modal > div {
+        max-height: 92dvh !important; border-radius: 20px !important; padding: 16px !important;
+      }
+      #export-success-toast { top: 64px !important; right: 8px !important; left: 8px !important; }
+      /* Input/select di panel: 16px agar tidak memicu zoom otomatis di iOS */
+      #left-sidebar input[type="text"], #left-sidebar input[type="search"], #left-sidebar select,
+      #right-sidebar input[type="text"], #right-sidebar select { font-size: 16px !important; }
+    }
+
+    @media (max-width: 380px) {
+      #hdr-logo { display: none !important; }
+      #floating-toggle-left-btn span, #floating-toggle-right-btn span { font-size: 10px !important; }
+    }
   </style>
 </head>
 <body class="h-full w-full bg-slate-950 text-slate-100 overflow-hidden font-sans antialiased relative flex flex-col">
@@ -739,21 +819,21 @@
   <!-- ============================================================== -->
   <header class="h-14 px-4 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/50 flex items-center justify-between shadow-2xl z-50 shrink-0 select-none relative">
     <!-- Sisi Kiri: Branding & Toggle Sidebar Kiri -->
-    <div class="flex items-center gap-3">
+    <div id="hdr-left" class="flex items-center gap-3 min-w-0">
       <button id="toggle-left-sidebar-btn" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-indigo-400 hover:text-white border border-slate-700/50 transition-colors shadow-sm cursor-pointer" title="Buka/Tutup Panel Lapisan">
         <i class="fa-solid fa-bars-staggered text-sm"></i>
       </button>
 
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-xl bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-400 shadow-inner">
+      <div id="hdr-brand" class="flex items-center gap-2.5 min-w-0">
+        <div id="hdr-logo" class="w-8 h-8 rounded-xl bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-indigo-400 shadow-inner">
           <i class="fa-solid fa-earth-asia text-sm"></i>
         </div>
-        <div>
-          <h1 class="text-xs sm:text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
+        <div class="min-w-0">
+          <h1 id="hdr-title" class="text-xs sm:text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
             <span>WebGIS Analisis Tesis Evan</span>
             <span class="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hidden sm:inline">2025</span>
           </h1>
-          <p class="text-[10px] text-slate-400 truncate max-w-[200px] sm:max-w-xs">
+          <p id="hdr-subtitle" class="text-[10px] text-slate-400 truncate max-w-[200px] sm:max-w-xs">
             Analisis Spasial Klaster Kemiskinan & Risiko Bencana
           </p>
         </div>
@@ -774,7 +854,7 @@
     </div>
 
     <!-- Sisi Kanan: Widget Cuaca, Info Riset, Status PostGIS, & Toggle Atribut (Terpisah Horizontal) -->
-    <div class="flex items-center gap-2.5">
+    <div id="hdr-right" class="flex items-center gap-2.5 shrink-0">
       <!-- Widget Cuaca Real-Time Sampit (Header Bar Interaktif) -->
       <div id="weather-chip" onclick="openWeatherForecastModal()" class="flex items-center gap-2.5 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-indigo-500/50 rounded-xl px-3 py-1.5 text-xs cursor-pointer transition-all shadow-md group" title="Prakiraan Cuaca Terkini Sampit • Klik untuk Prakiraan 5 Hari">
         <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform">
@@ -782,10 +862,10 @@
         </div>
         <div class="leading-tight">
           <div class="text-[11px] font-bold text-white flex items-center gap-1.5 whitespace-nowrap">
-            <span>Sampit:</span>
+            <span class="wx-label">Sampit:</span>
             <span id="weather-temp" class="text-amber-400 font-mono font-bold">29,4°C</span>
           </div>
-          <div class="flex items-center gap-1 text-[10px] text-slate-400 group-hover:text-slate-300 whitespace-nowrap">
+          <div class="wx-wind flex items-center gap-1 text-[10px] text-slate-400 group-hover:text-slate-300 whitespace-nowrap">
             <i class="fa-solid fa-wind text-[9px] text-sky-400"></i>
             <span id="weather-condition">14 km/j</span>
           </div>
@@ -992,6 +1072,8 @@
   <!-- ============================================================== -->
   <!-- 3. FLOATING SIDEBAR KIRI (Z-INDEX: 40 DENGAN MARGIN ATAS MT-16)-->
   <!-- ============================================================== -->
+  <div id="sidebar-scrim" onclick="closeMobileSidebars()" aria-hidden="true"></div>
+
   <aside id="left-sidebar" class="sidebar-pane absolute top-16 bottom-4 left-4 z-40 w-[calc(100vw-2rem)] sm:w-88 md:w-[360px] max-w-[360px] bg-slate-900/85 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl flex flex-col overflow-hidden pointer-events-auto">
     <!-- Header Tab Kiri (Termasuk Sub-Sidebar Tab Legenda Baru) -->
     <div class="flex items-center justify-between border-b border-white/10 bg-slate-950/40 p-1.5 shrink-0">
@@ -6781,6 +6863,8 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
     }
 
     function setLeftSidebar(open, triggerResize = true) {
+      // Mobile/tablet: hanya satu panel boleh terbuka agar tidak tertumpuk
+      if (open && window.innerWidth < 1024 && isRightSidebarOpen) setRightSidebar(false, false);
       isLeftSidebarOpen = Boolean(open);
       const sb = document.getElementById('left-sidebar');
       const btn = document.getElementById('toggle-left-sidebar-btn');
@@ -6841,6 +6925,8 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
     }
 
     function setRightSidebar(open, triggerResize = true) {
+      // Mobile/tablet: hanya satu panel boleh terbuka agar tidak tertumpuk
+      if (open && window.innerWidth < 1024 && isLeftSidebarOpen) setLeftSidebar(false, false);
       isRightSidebarOpen = Boolean(open);
       const sb = document.getElementById('right-sidebar');
       const btn = document.getElementById('toggle-right-sidebar-btn');
@@ -6883,7 +6969,18 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
     }
 
     // Penyesuaian Lebar Aman Bilah Floating Lompat Wilayah dari Sidebar
+    function closeMobileSidebars() {
+      if (window.innerWidth >= 1024) return;
+      setLeftSidebar(false, false);
+      setRightSidebar(false, true);
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && window.innerWidth < 1024 && (isLeftSidebarOpen || isRightSidebarOpen)) closeMobileSidebars();
+    });
+
     function updateQuickJumpBarLayout() {
+      const scrim = document.getElementById('sidebar-scrim');
+      if (scrim) scrim.classList.toggle('show', window.innerWidth < 1024 && (isLeftSidebarOpen || isRightSidebarOpen));
       const bar = document.getElementById('quick-jump-bar');
       if (!bar) return;
 
