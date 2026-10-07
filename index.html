@@ -16,6 +16,7 @@
   <link rel="preconnect" href="https://unpkg.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://server.arcgisonline.com" crossorigin>
+  <link rel="preconnect" href="https://mt1.google.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -861,6 +862,45 @@
     @media (max-width: 359.98px) {
       #quick-jump-bar > div:first-child { display: none !important; }
     }
+
+  /* ============================================================== */
+  /* FIX STRUKTUR HEADER: skala z-index tunggal + hit-testing aman   */
+  /* ============================================================== */
+  :root { --hdr-h: calc(56px + env(safe-area-inset-top, 0px)); }
+  #app-header {
+    height: var(--hdr-h) !important; box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    position: relative; z-index: 2000 !important; isolation: isolate;
+    pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  }
+  #app-header button, #app-header [data-action], #app-header select, #app-header input { touch-action: manipulation; cursor: pointer; }
+  #app-header input { cursor: text; }
+  #header-wind-popup {
+    position: fixed !important; z-index: 2100 !important;
+    top: calc(var(--hdr-h) + 6px) !important; right: 12px !important; left: auto !important;
+    width: min(288px, calc(100vw - 16px)) !important; margin: 0 !important;
+    background: rgba(15, 23, 42, 0.97); border: 1px solid rgba(100, 116, 139, 0.7);
+    border-radius: 16px; padding: 14px; box-shadow: 0 25px 50px -12px rgba(0,0,0,.7);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  }
+  #header-wind-popup > * + * { margin-top: 12px; }
+  #header-wind-popup.hidden { display: none !important; }
+  #header-wind-popup select { font-size: 16px; } /* cegah auto-zoom iOS */
+
+  /* Lapisan lain di bawah header, modal di atas header */
+  #sidebar-scrim { z-index: 1400 !important; }
+  #left-sidebar, #right-sidebar { z-index: 1500 !important; top: calc(var(--hdr-h) + 8px) !important; }
+  #quick-jump-bar, #floating-toggle-left-btn, #floating-toggle-right-btn, #wind-hud { z-index: 1300 !important; }
+  #about-modal, #weather-modal, #export-password-modal { z-index: 3000 !important; }
+  #export-success-toast { z-index: 3100 !important; }
+  #search-suggestions { z-index: 2200 !important; }
+  @media (max-width: 1023.98px) {
+    #left-sidebar, #right-sidebar { top: calc(var(--hdr-h) + 8px) !important; }
+  }
+  @media (max-width: 767.98px) {
+    #header-wind-popup { left: 8px !important; right: 8px !important; width: auto !important; }
+    #export-success-toast { top: calc(var(--hdr-h) + 8px) !important; }
+  }
 </style>
 </head>
 <body class="h-full w-full bg-slate-950 text-slate-100 overflow-hidden font-sans antialiased relative flex flex-col">
@@ -868,10 +908,10 @@
   <!-- ============================================================== -->
   <!-- 1. HEADER NAVIGASI / TOPBAR UTAMA (Z-INDEX: 50 SESUAI SPESIFIKASI) -->
   <!-- ============================================================== -->
-  <header class="h-14 px-4 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/50 flex items-center justify-between shadow-2xl z-50 shrink-0 select-none relative">
+  <header id="app-header" class="h-14 px-4 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/50 flex items-center justify-between shadow-2xl z-50 shrink-0 select-none relative">
     <!-- Sisi Kiri: Branding & Toggle Sidebar Kiri -->
     <div id="hdr-left" class="flex items-center gap-3 min-w-0">
-      <button id="toggle-left-sidebar-btn" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-indigo-400 hover:text-white border border-slate-700/50 transition-colors shadow-sm cursor-pointer" title="Buka/Tutup Panel Lapisan">
+      <button id="toggle-left-sidebar-btn" type="button" aria-label="Buka atau tutup panel lapisan" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-indigo-400 hover:text-white border border-slate-700/50 transition-colors shadow-sm cursor-pointer" title="Buka/Tutup Panel Lapisan">
         <i class="fa-solid fa-bars-staggered text-sm"></i>
       </button>
 
@@ -907,7 +947,7 @@
     <!-- Sisi Kanan: Widget Cuaca, Info Riset, Status PostGIS, & Toggle Atribut (Terpisah Horizontal) -->
     <div id="hdr-right" class="flex items-center gap-2.5 shrink-0">
       <!-- Widget Cuaca Real-Time Sampit (Header Bar Interaktif) -->
-      <div id="weather-chip" onclick="openWeatherForecastModal()" class="flex items-center gap-2.5 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-indigo-500/50 rounded-xl px-3 py-1.5 text-xs cursor-pointer transition-all shadow-md group" title="Prakiraan Cuaca Terkini Sampit • Klik untuk Prakiraan 5 Hari">
+      <div id="weather-chip" data-action="weather" role="button" tabindex="0" aria-label="Prakiraan cuaca 5 hari" class="flex items-center gap-2.5 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-indigo-500/50 rounded-xl px-3 py-1.5 text-xs cursor-pointer transition-all shadow-md group" title="Prakiraan Cuaca Terkini Sampit • Klik untuk Prakiraan 5 Hari">
         <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform">
           <span id="weather-icon">⛅</span>
         </div>
@@ -929,7 +969,7 @@
 
       <!-- Widget Kontrol Simulasi Angin Header (Akses Cepat & Pop-up) -->
       <div class="relative" id="header-wind-widget-container">
-        <button id="header-wind-btn" onclick="toggleHeaderWindPopup()" class="px-2.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-sky-300 hover:text-white border border-slate-700/50 hover:border-sky-500/50 transition-all shadow-md flex items-center gap-1.5 text-xs font-semibold cursor-pointer group" title="Kontrol Cepat Simulasi Aliran Angin">
+        <button id="header-wind-btn" type="button" data-action="wind" aria-haspopup="true" aria-expanded="false" aria-label="Kontrol simulasi angin" class="px-2.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-sky-300 hover:text-white border border-slate-700/50 hover:border-sky-500/50 transition-all shadow-md flex items-center gap-1.5 text-xs font-semibold cursor-pointer group" title="Kontrol Cepat Simulasi Aliran Angin">
           <i id="header-wind-btn-icon" class="fa-solid fa-wind text-xs text-sky-400 group-hover:rotate-12 transition-transform"></i>
           <span class="hidden xl:inline text-[11px] font-bold" id="header-wind-btn-label">Muson (22 kt)</span>
           <span id="header-wind-power-dot" class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
@@ -937,7 +977,35 @@
         </button>
 
         <!-- Pop-up Kontrol Simulasi Angin Header -->
-        <div id="header-wind-popup" class="hidden absolute right-0 top-full mt-2 w-72 bg-slate-900/95 border border-slate-700/70 rounded-2xl p-3.5 shadow-2xl backdrop-blur-xl z-50 space-y-3 pointer-events-auto">
+      </div>
+
+      <!-- Status PostGIS Engine -->
+      <div class="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-slate-900/80 border border-slate-700/50 text-[11px] text-emerald-300 shadow-md">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-semibold text-[10px] hidden 2xl:inline">PostGIS Engine</span>
+      </div>
+
+      <!-- Tombol Reset Lengkap (Reset View, Layer & State ke Posisi Awal) -->
+      <button id="btn-reset-all" type="button" data-action="reset" aria-label="Reset tampilan peta" class="px-2.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-amber-300 hover:text-white border border-slate-700/60 transition-all shadow-md flex items-center gap-1.5 text-xs font-semibold cursor-pointer group" title="Reset View, Layer & Status ke Posisi Awal">
+        <i class="fa-solid fa-rotate-left text-xs text-amber-400 group-hover:-rotate-90 transition-transform duration-200"></i>
+        <span class="hidden sm:inline font-bold">Reset</span>
+      </button>
+
+      <!-- Tombol Informasi & Metodologi Riset Tesis (Terpisah Horizontal) -->
+      <button id="btn-open-about" type="button" aria-label="Informasi riset tesis" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/25 cursor-pointer">
+        <i class="fa-solid fa-circle-info text-xs"></i>
+        <span class="hidden sm:inline">Riset Tesis</span>
+      </button>
+
+      <!-- Tombol Toggle Sidebar Kanan (Atribut & Profil) -->
+      <button id="toggle-right-sidebar-btn" type="button" aria-label="Buka atau tutup panel atribut" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-indigo-400 hover:text-white border border-slate-700/50 transition-colors shadow-sm cursor-pointer" title="Buka/Tutup Panel Atribut & Statistik">
+        <i class="fa-solid fa-chart-pie text-sm"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Popup angin: sibling <header> (bukan anak) agar position:fixed relatif ke viewport -->
+  <div id="header-wind-popup" class="hidden w-72 bg-slate-900/95 border border-slate-700/70 rounded-2xl p-3.5 shadow-2xl backdrop-blur-xl z-50 space-y-3 pointer-events-auto">
           <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
             <div class="flex items-center gap-2">
               <div id="header-wind-icon-box" class="w-7 h-7 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs">
@@ -974,32 +1042,6 @@
             <span id="header-wind-metrics" class="font-mono text-cyan-300 font-bold">22 knot (~41 km/j)</span>
           </div>
         </div>
-      </div>
-
-      <!-- Status PostGIS Engine -->
-      <div class="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-slate-900/80 border border-slate-700/50 text-[11px] text-emerald-300 shadow-md">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="font-semibold text-[10px] hidden 2xl:inline">PostGIS Engine</span>
-      </div>
-
-      <!-- Tombol Reset Lengkap (Reset View, Layer & State ke Posisi Awal) -->
-      <button id="btn-reset-all" onclick="resetWebGISState()" class="px-2.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-amber-300 hover:text-white border border-slate-700/60 transition-all shadow-md flex items-center gap-1.5 text-xs font-semibold cursor-pointer group" title="Reset View, Layer & Status ke Posisi Awal">
-        <i class="fa-solid fa-rotate-left text-xs text-amber-400 group-hover:-rotate-90 transition-transform duration-200"></i>
-        <span class="hidden sm:inline font-bold">Reset</span>
-      </button>
-
-      <!-- Tombol Informasi & Metodologi Riset Tesis (Terpisah Horizontal) -->
-      <button id="btn-open-about" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/25 cursor-pointer">
-        <i class="fa-solid fa-circle-info text-xs"></i>
-        <span class="hidden sm:inline">Riset Tesis</span>
-      </button>
-
-      <!-- Tombol Toggle Sidebar Kanan (Atribut & Profil) -->
-      <button id="toggle-right-sidebar-btn" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-indigo-400 hover:text-white border border-slate-700/50 transition-colors shadow-sm cursor-pointer" title="Buka/Tutup Panel Atribut & Statistik">
-        <i class="fa-solid fa-chart-pie text-sm"></i>
-      </button>
-    </div>
-  </header>
 
   <!-- ============================================================== -->
   <!-- 2. CONTAINER PETA FULLSCREEN & FLOATING CONTROLS               -->
@@ -1287,13 +1329,13 @@
             <i class="fa-solid fa-earth-americas text-emerald-400 text-xs"></i>
             <span class="text-xs font-bold text-white uppercase tracking-wider">Pilihan Basemap</span>
           </div>
-          <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">3 Tipe Tersedia</span>
+          <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">4 Tipe Tersedia</span>
         </div>
         <p class="text-[11px] text-slate-400 leading-relaxed">
           Pilih peta dasar referensi untuk memvisualisasikan kontras morfologi wilayah, jalan, dan klaster kemiskinan:
         </p>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
           <!-- 1. Satelit HD (Esri World Imagery) -->
           <div onclick="setBasemap('satellite')" id="bm-satellite" class="group relative p-3.5 rounded-xl border-2 border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/20 cursor-pointer transition-all text-left">
             <div id="bm-check-satellite" class="absolute top-2.5 right-2.5 z-10 w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px] shadow-md shadow-indigo-500/50">
@@ -1312,8 +1354,30 @@
               <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
               <span class="absolute bottom-1.5 left-2 px-1.5 py-0.5 rounded bg-black/70 backdrop-blur-xs text-[9px] font-mono text-emerald-300 font-semibold">HD Esri</span>
             </div>
-            <div class="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors">Satelit HD</div>
+            <div class="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors">Satelit HD (Esri)</div>
             <div class="text-xs text-slate-400 mt-1 leading-snug">Citra Satelit Resolusi Tinggi</div>
+          </div>
+
+          <!-- 1b. Google Satelit -->
+          <div onclick="setBasemap('googleSat')" id="bm-googleSat" class="group relative p-3.5 rounded-xl border border-slate-700/60 bg-slate-900/60 hover:border-slate-500 transition-all cursor-pointer text-left">
+            <div id="bm-check-googleSat" class="hidden absolute top-2.5 right-2.5 z-10 w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[10px] shadow-md shadow-indigo-500/50">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <div class="h-20 w-full rounded-lg overflow-hidden relative border border-white/10 bg-slate-900 mb-2.5">
+              <div class="absolute inset-0 bg-gradient-to-br from-lime-900/80 via-emerald-950 to-slate-950 flex items-center justify-center">
+                <svg viewBox="0 0 120 70" class="w-full h-full opacity-80">
+                  <rect width="120" height="70" fill="#1c3a20"/>
+                  <path d="M0,55 Q30,35 60,48 T120,38 L120,70 L0,70 Z" fill="#2f5d2a" opacity="0.9"/>
+                  <path d="M70,0 Q80,30 100,70" stroke="#7c6a4a" stroke-width="4" fill="none" opacity="0.8"/>
+                  <circle cx="28" cy="22" r="11" fill="#3f7d3a" opacity="0.7"/>
+                  <rect x="86" y="14" width="16" height="11" fill="#8b8f7a" opacity="0.6" rx="1"/>
+                </svg>
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+              <span class="absolute bottom-1.5 left-2 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-mono text-lime-300 font-semibold">Google</span>
+            </div>
+            <div class="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors">Google Satelit</div>
+            <div class="text-xs text-slate-400 mt-1 leading-snug">Citra Satelit Google (zoom hingga 20)</div>
           </div>
 
           <!-- 2. OSM Standar (OpenStreetMap) -->
@@ -2357,6 +2421,13 @@
           attribution: 'Esri World Imagery'
         }).addTo(map);
 
+        // Google Satelit (citra murni, tanpa label)
+        basemaps.googleSat = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+          subdomains: ['0', '1', '2', '3'],
+          maxZoom: 20, keepBuffer: 4, updateWhenZooming: false,
+          attribution: 'Imagery © Google'
+        });
+
         basemaps.osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19, keepBuffer: 4, updateWhenZooming: false,
           attribution: '© OpenStreetMap contributors'
@@ -2391,7 +2462,7 @@
         type = 'satellite';
       }
 
-      const availableBasemaps = ['satellite', 'osm', 'topo'];
+      const availableBasemaps = ['satellite', 'googleSat', 'osm', 'topo'];
 
       availableBasemaps.forEach(b => {
         if (basemaps[b] && map.hasLayer(basemaps[b])) {
@@ -7937,6 +8008,49 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
         <div class="text-right text-[9px] font-mono text-slate-300 shrink-0">RS ${fmt(r.h)}<br>SMA ${fmt(r.e)}</div>
       </div>`).join('') : '<div class="text-[11px] text-slate-500 italic">Tidak ada desa dengan keterbatasan ganda.</div>';
   };
+})();
+</script>
+
+<script>
+/* FIX HEADER: satu pintu event (delegasi) + popup angin yang benar */
+(function () {
+  function init() {
+    var hdr = document.getElementById('app-header');
+    var pop = document.getElementById('header-wind-popup');
+    var windBtn = document.getElementById('header-wind-btn');
+    if (!hdr) return;
+
+    function setPop(open) {
+      if (!pop) return;
+      pop.classList.toggle('hidden', !open);
+      if (windBtn) windBtn.setAttribute('aria-expanded', String(open));
+    }
+    function safe(fn) { try { if (typeof fn === 'function') fn(); } catch (e) { console.error('[header]', e); } }
+
+    hdr.addEventListener('click', function (e) {
+      var el = e.target.closest('[data-action]');
+      if (!el || !hdr.contains(el)) return;
+      var a = el.getAttribute('data-action');
+      if (a === 'wind') { setPop(pop.classList.contains('hidden')); return; }
+      setPop(false);
+      if (a === 'weather') safe(window.openWeatherForecastModal);
+      else if (a === 'reset') safe(window.resetWebGISState);
+    });
+    // keyboard untuk chip cuaca (role=button)
+    hdr.addEventListener('keydown', function (e) {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-action="weather"]')) {
+        e.preventDefault(); setPop(false); safe(window.openWeatherForecastModal);
+      }
+    });
+    // tutup popup: klik di luar / Escape / saat peta disentuh
+    document.addEventListener('click', function (e) {
+      if (!pop || pop.classList.contains('hidden')) return;
+      if (pop.contains(e.target) || (windBtn && windBtn.contains(e.target))) return;
+      setPop(false);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setPop(false); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
 </body>
