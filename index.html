@@ -901,6 +901,163 @@
     #header-wind-popup { left: 8px !important; right: 8px !important; width: auto !important; }
     #export-success-toast { top: calc(var(--hdr-h) + 8px) !important; }
   }
+
+  /* ============================================================== */
+  /* ALAT UKUR (MEASURE TOOL) — standar WebGIS                       */
+  /* ============================================================== */
+  #ms-panel[hidden], #ms-cross[hidden], #ms-panel [hidden], .ms-fab-badge[hidden] { display: none !important; }
+  #ms-fab {
+    position: absolute; top: 64px; left: 12px; z-index: 1300;
+    width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    background: rgba(15, 23, 42, .92); color: #818cf8; font-size: 17px;
+    border: 1px solid rgba(100, 116, 139, .55); box-shadow: 0 10px 25px -8px rgba(0, 0, 0, .6);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    transition: background .2s, color .2s, border-color .2s, left .3s ease;
+  }
+  #ms-fab:hover { color: #fff; border-color: #818cf8; }
+  #ms-fab.on { background: #6366f1; color: #fff; border-color: #a5b4fc; box-shadow: 0 0 0 3px rgba(99, 102, 241, .28), 0 10px 25px -8px rgba(0, 0, 0, .6); }
+  .ms-fab-badge {
+    position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+    background: #22d3ee; color: #082f49; font: 700 10px/18px 'JetBrains Mono', ui-monospace, monospace; text-align: center;
+  }
+  #ms-panel {
+    position: absolute; z-index: 1350; top: 116px; left: 12px; width: 348px;
+    max-height: max(260px, calc(100% - 230px)); display: flex; flex-direction: column; overflow: hidden;
+    background: rgba(15, 23, 42, .95); color: #e2e8f0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    border: 1px solid rgba(100, 116, 139, .5); border-radius: 18px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, .7);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); pointer-events: auto;
+    animation: msIn .22s cubic-bezier(.16, 1, .3, 1); transition: left .3s ease;
+  }
+  @keyframes msIn { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes msPulse { 0%, 100% { box-shadow: 0 0 0 1.5px rgba(2,6,23,.7), 0 0 0 0 rgba(34,211,238,.55); } 50% { box-shadow: 0 0 0 1.5px rgba(2,6,23,.7), 0 0 0 7px rgba(34,211,238,0); } }
+  @media (min-width: 1024px) {
+    body.sidebar-left-open #ms-fab, body.sidebar-left-open #ms-panel { left: calc(var(--sidebar-width, 360px) + var(--sidebar-gap, 16px) + 12px); }
+  }
+  .ms-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 10px 6px 14px; flex-shrink: 0; }
+  .ms-title { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13px; color: #fff; }
+  .ms-title i { color: #818cf8; }
+  .ms-title em { font: 600 9px 'JetBrains Mono', monospace; font-style: normal; color: #67e8f9; background: rgba(34, 211, 238, .12); border: 1px solid rgba(34, 211, 238, .3); padding: 1px 6px; border-radius: 6px; }
+  .ms-head-btns { display: flex; gap: 4px; }
+  .ms-head-btns button, .ms-sec-head button {
+    width: 30px; height: 30px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center;
+    color: #94a3b8; font-size: 12px; cursor: pointer; background: transparent; border: 0; touch-action: manipulation;
+  }
+  .ms-head-btns button:hover, .ms-sec-head button:hover, .ms-head-btns button.on { background: rgba(99, 102, 241, .22); color: #fff; }
+  .ms-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px 10px 8px; flex-shrink: 0; }
+  .ms-tabs button {
+    display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 2px; border-radius: 11px;
+    background: rgba(30, 41, 59, .55); border: 1px solid transparent; color: #94a3b8; font-size: 10.5px; font-weight: 700; cursor: pointer; touch-action: manipulation;
+  }
+  .ms-tabs button i { font-size: 14px; }
+  .ms-tabs button:hover { color: #fff; }
+  .ms-tabs button.on { background: rgba(99, 102, 241, .25); border-color: rgba(129, 140, 248, .6); color: #fff; }
+  .ms-readout { padding: 4px 14px 10px; flex-shrink: 0; }
+  .ms-lab { font-size: 10.5px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; display: flex; align-items: center; gap: 6px; }
+  .ms-lab u { text-decoration: none; text-transform: none; letter-spacing: 0; color: #67e8f9; background: rgba(34, 211, 238, .1); padding: 0 6px; border-radius: 6px; font-size: 10px; }
+  .ms-val { font: 800 30px/1.15 'Plus Jakarta Sans', system-ui, sans-serif; color: #fff; font-variant-numeric: tabular-nums; margin-top: 2px; word-break: break-word; }
+  .ms-val small { font-size: 14px; font-weight: 700; color: #818cf8; margin-left: 6px; }
+  .ms-val-sm { font-size: 14px; line-height: 1.4; font-weight: 600; }
+  .ms-mono, .ms-row code, .ms-tbl td { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .ms-sub { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+  .ms-sub > div { background: rgba(30, 41, 59, .6); border-radius: 10px; padding: 6px 8px; min-width: 0; }
+  .ms-sub span { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: .05em; color: #64748b; font-weight: 700; }
+  .ms-sub b { display: block; font-size: 11.5px; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+  .ms-sub .ms-mono { font-size: 10px; }
+  .ms-actions { display: flex; gap: 6px; padding: 0 10px 10px; flex-shrink: 0; }
+  .ms-actions button {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; height: 38px; border-radius: 11px;
+    background: rgba(51, 65, 85, .6); border: 1px solid rgba(100, 116, 139, .4); color: #e2e8f0; font-size: 11.5px; font-weight: 700; cursor: pointer; touch-action: manipulation;
+  }
+  .ms-actions button:hover:not(:disabled) { background: rgba(71, 85, 105, .8); }
+  .ms-actions button:disabled { opacity: .38; cursor: not-allowed; }
+  .ms-actions .ms-primary { background: #4f46e5; border-color: #818cf8; color: #fff; flex: 1.3; }
+  .ms-actions .ms-primary:hover:not(:disabled) { background: #6366f1; }
+  .ms-actions .ms-add { background: #0891b2; border-color: #67e8f9; color: #fff; flex: 1.3; }
+  .ms-detail { display: none; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 2px 12px 8px; border-top: 1px solid rgba(100, 116, 139, .3); }
+  .ms-detail-open .ms-detail { display: block; }
+  .ms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-top: 10px; }
+  .ms-grid label { display: flex; flex-direction: column; gap: 3px; font-size: 9.5px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; }
+  .ms-grid select { width: 100%; background: rgba(2, 6, 23, .7); color: #e2e8f0; border: 1px solid rgba(100, 116, 139, .5); border-radius: 9px; padding: 6px 4px; font-size: 11px; text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .ms-toggles { display: flex; gap: 14px; flex-wrap: wrap; padding: 10px 0 4px; }
+  .ms-sw { display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 600; color: #cbd5e1; cursor: pointer; }
+  .ms-sw input { position: absolute; opacity: 0; pointer-events: none; }
+  .ms-sw span { width: 32px; height: 18px; border-radius: 9px; background: #334155; position: relative; transition: background .2s; flex-shrink: 0; }
+  .ms-sw span::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform .2s; }
+  .ms-sw input:checked + span { background: #6366f1; }
+  .ms-sw input:checked + span::after { transform: translateX(14px); }
+  .ms-sw input:focus-visible + span { outline: 2px solid #a5b4fc; outline-offset: 2px; }
+  .ms-chips { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 0 2px; }
+  .ms-chips span { font-size: 10.5px; color: #94a3b8; background: rgba(30, 41, 59, .7); border: 1px solid rgba(100, 116, 139, .3); border-radius: 8px; padding: 2px 7px; font-variant-numeric: tabular-nums; }
+  .ms-chips b { color: #e2e8f0; font-weight: 700; }
+  .ms-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 11px; }
+  .ms-row > span { width: 62px; flex-shrink: 0; font-size: 9.5px; text-transform: uppercase; letter-spacing: .05em; color: #64748b; font-weight: 700; }
+  .ms-row code { flex: 1; min-width: 0; font-size: 10.5px; color: #cbd5e1; word-break: break-word; }
+  .ms-cp { width: 26px; height: 26px; border-radius: 8px; color: #94a3b8; background: transparent; border: 0; cursor: pointer; flex-shrink: 0; }
+  .ms-cp:hover { background: rgba(99, 102, 241, .25); color: #fff; }
+  .ms-warn { margin-top: 8px; font-size: 10.5px; color: #fcd34d; background: rgba(245, 158, 11, .12); border: 1px solid rgba(245, 158, 11, .35); border-radius: 9px; padding: 6px 8px; }
+  .ms-sec-head { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: #94a3b8; }
+  .ms-sec-head i { font-style: normal; color: #67e8f9; margin-left: 4px; }
+  .ms-tbl { max-height: 140px; overflow: auto; margin-top: 6px; border: 1px solid rgba(100, 116, 139, .3); border-radius: 10px; }
+  .ms-tbl table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+  .ms-tbl th { position: sticky; top: 0; background: #1e293b; color: #94a3b8; font-size: 9px; text-transform: uppercase; padding: 4px 6px; text-align: left; }
+  .ms-tbl td { padding: 3px 6px; color: #cbd5e1; border-top: 1px solid rgba(51, 65, 85, .6); white-space: nowrap; }
+  .ms-tbl tr.ms-close td { color: #67e8f9; }
+  .ms-empty { font-size: 11px; color: #64748b; padding: 10px 2px; }
+  .ms-item { display: flex; align-items: center; gap: 4px; padding: 4px 4px 4px 6px; margin-top: 5px; border-radius: 11px; border: 1px solid transparent; background: rgba(30, 41, 59, .5); }
+  .ms-item.on { border-color: rgba(129, 140, 248, .6); background: rgba(79, 70, 229, .15); }
+  .ms-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 2px rgba(255, 255, 255, .25); }
+  .ms-item-main { flex: 1; min-width: 0; text-align: left; background: none; border: 0; color: inherit; cursor: pointer; padding: 3px 4px; }
+  .ms-item-main b { display: block; font-size: 11.5px; color: #fff; }
+  .ms-item-main span { display: block; font-size: 10px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'JetBrains Mono', monospace; }
+  .ms-item > button:not(.ms-item-main) { width: 28px; height: 28px; border-radius: 8px; border: 0; background: transparent; color: #94a3b8; font-size: 11px; cursor: pointer; flex-shrink: 0; }
+  .ms-item > button:not(.ms-item-main):hover { background: rgba(99, 102, 241, .25); color: #fff; }
+  .ms-foot { display: flex; align-items: center; gap: 7px; padding: 7px 14px; font: 500 10.5px 'JetBrains Mono', monospace; color: #67e8f9; border-top: 1px solid rgba(100, 116, 139, .3); background: rgba(2, 6, 23, .45); flex-shrink: 0; white-space: nowrap; overflow: hidden; }
+  .ms-foot span { overflow: hidden; text-overflow: ellipsis; }
+  .ms-hint { padding: 6px 14px 9px; font-size: 10.5px; color: #94a3b8; line-height: 1.45; background: rgba(2, 6, 23, .45); flex-shrink: 0; }
+  .ms-hint b { color: #e2e8f0; }
+
+  /* Interaksi peta saat alat ukur aktif: poligon & POI tidak mencuri klik */
+  #map.ms-active, #map.ms-active *:not(.ms-vtx):not(.ms-vtx *) { cursor: crosshair !important; }
+  #map.ms-active .ms-vtx, #map.ms-active .ms-vtx * { cursor: grab !important; }
+  #map.ms-active .leaflet-interactive:not(.ms-vtx) { pointer-events: none !important; }
+  #map.ms-active .leaflet-marker-draggable.ms-vtx:active, #map.ms-active .ms-vtx:active * { cursor: grabbing !important; }
+
+  /* Elemen di atas peta */
+  .ms-lbl { width: 0 !important; height: 0 !important; overflow: visible; pointer-events: none; }
+  .ms-lbl-in {
+    position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: none;
+    display: flex; flex-direction: column; align-items: center; padding: 2px 7px; border-radius: 999px;
+    background: rgba(2, 6, 23, .88); color: #e2e8f0; border: 1px solid rgba(148, 163, 184, .45);
+    font: 600 11px/1.3 'JetBrains Mono', ui-monospace, monospace; box-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+  }
+  .ms-lbl-in small { font-size: 9.5px; font-weight: 500; opacity: .85; }
+  .ms-lbl-in.ms-l-total { background: #4f46e5; border-color: #a5b4fc; color: #fff; transform: translate(12px, -120%); font-size: 12px; padding: 3px 9px; border-radius: 10px; align-items: flex-start; }
+  .ms-lbl-in.ms-l-coord { transform: translate(14px, -130%); border-radius: 8px; font-size: 10.5px; }
+  .ms-lbl-in.ms-center { transform: translate(-50%, -50%); align-items: center; }
+  .ms-lbl-in.ms-below { transform: translate(-50%, 14px); align-items: center; }
+  .ms-pin { width: 0 !important; height: 0 !important; overflow: visible; pointer-events: none; }
+  .ms-pin-in { position: absolute; left: 0; top: 0; transform: translate(-50%, -100%); color: var(--c, #22d3ee); font-size: 28px; line-height: 1; filter: drop-shadow(0 0 1px #fff) drop-shadow(0 2px 3px rgba(0, 0, 0, .75)); }
+  .ms-vtx { background: none !important; border: 0 !important; display: flex; align-items: center; justify-content: center; }
+  .ms-v { width: 14px; height: 14px; border-radius: 50%; background: #22d3ee; border: 2.5px solid #fff; box-shadow: 0 0 0 1.5px rgba(2, 6, 23, .7), 0 2px 6px rgba(0, 0, 0, .6); transition: transform .12s; }
+  .ms-vtx:hover .ms-v { transform: scale(1.3); }
+  .ms-v-first .ms-v { background: #fbbf24; }
+  .ms-v-close .ms-v { background: #34d399; width: 16px; height: 16px; }
+  .ms-v-last .ms-v { animation: msPulse 1.6s infinite; }
+  #ms-cross { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; z-index: 900; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .7)); }
+  #ms-toast { position: absolute; left: 50%; top: 70px; z-index: 1400; transform: translate(-50%, -8px); opacity: 0; pointer-events: none; padding: 8px 14px; border-radius: 12px; background: rgba(15, 23, 42, .95); border: 1px solid rgba(129, 140, 248, .6); color: #fff; font: 600 12px 'Plus Jakarta Sans', system-ui, sans-serif; box-shadow: 0 10px 25px -8px rgba(0, 0, 0, .6); transition: opacity .2s, transform .2s; white-space: nowrap; max-width: calc(100% - 24px); overflow: hidden; text-overflow: ellipsis; }
+  #ms-toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+  /* Mobile: bottom-sheet agar peta tetap terlihat */
+  @media (max-width: 639.98px) {
+    #ms-panel { top: auto; left: 8px !important; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); width: auto; max-height: 64%; border-radius: 20px 20px 16px 16px; }
+    body.ms-open #ms-fab { display: none; }
+    .ms-grid { grid-template-columns: 1fr 1fr; }
+    .ms-grid select, #ms-panel select { font-size: 16px; }
+    .ms-val { font-size: 26px; }
+    .ms-actions button { height: 42px; }
+    .ms-hint { padding-bottom: 8px; }
+  }
 </style>
 </head>
 <body class="h-full w-full bg-slate-950 text-slate-100 overflow-hidden font-sans antialiased relative flex flex-col">
@@ -8052,6 +8209,876 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
+</script>
+<script>
+/* ===== WebGIS Measure — modul matematika geodesi (WGS84) ===== */
+(function (root) {
+  'use strict';
+  var RAD = Math.PI / 180;
+  var WGS = { a: 6378137, f: 1 / 298.257223563 };
+  WGS.b = WGS.a * (1 - WGS.f);
+  WGS.e2 = WGS.f * (2 - WGS.f);
+  var E = Math.sqrt(WGS.e2);
+
+  function norm360(d) { return ((d % 360) + 360) % 360; }
+  function normLng(d) { return ((d + 540) % 360 + 360) % 360 - 180; }
+
+  /* Haversine (cadangan bila Vincenty tidak konvergen) */
+  function haversine(p1, p2) {
+    var R = 6371008.8;
+    var dp = (p2.lat - p1.lat) * RAD, dl = (p2.lng - p1.lng) * RAD;
+    var a = Math.pow(Math.sin(dp / 2), 2) +
+      Math.cos(p1.lat * RAD) * Math.cos(p2.lat * RAD) * Math.pow(Math.sin(dl / 2), 2);
+    var s = 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
+    var y = Math.sin(dl) * Math.cos(p2.lat * RAD);
+    var x = Math.cos(p1.lat * RAD) * Math.sin(p2.lat * RAD) -
+      Math.sin(p1.lat * RAD) * Math.cos(p2.lat * RAD) * Math.cos(dl);
+    return { s: s, az1: norm360(Math.atan2(y, x) / RAD) };
+  }
+
+  /* Vincenty inverse: jarak geodesik elipsoid + azimut awal */
+  function inverse(p1, p2) {
+    var a = WGS.a, b = WGS.b, f = WGS.f;
+    if (p1.lat === p2.lat && p1.lng === p2.lng) return { s: 0, az1: 0, az2: 0 };
+    var L = (p2.lng - p1.lng) * RAD;
+    var U1 = Math.atan((1 - f) * Math.tan(p1.lat * RAD));
+    var U2 = Math.atan((1 - f) * Math.tan(p2.lat * RAD));
+    var sinU1 = Math.sin(U1), cosU1 = Math.cos(U1), sinU2 = Math.sin(U2), cosU2 = Math.cos(U2);
+    var lambda = L, lambdaP, iter = 0;
+    var sinSigma, cosSigma, sigma, sinAlpha, cos2Alpha, cos2SigmaM, C, sinL, cosL;
+    do {
+      sinL = Math.sin(lambda); cosL = Math.cos(lambda);
+      sinSigma = Math.sqrt(Math.pow(cosU2 * sinL, 2) + Math.pow(cosU1 * sinU2 - sinU1 * cosU2 * cosL, 2));
+      if (sinSigma === 0) return { s: 0, az1: 0, az2: 0 };
+      cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosL;
+      sigma = Math.atan2(sinSigma, cosSigma);
+      sinAlpha = cosU1 * cosU2 * sinL / sinSigma;
+      cos2Alpha = 1 - sinAlpha * sinAlpha;
+      cos2SigmaM = cos2Alpha !== 0 ? cosSigma - 2 * sinU1 * sinU2 / cos2Alpha : 0;
+      C = f / 16 * cos2Alpha * (4 + f * (4 - 3 * cos2Alpha));
+      lambdaP = lambda;
+      lambda = L + (1 - C) * f * sinAlpha *
+        (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
+      if (Math.abs(lambda) > Math.PI) return haversine(p1, p2);
+    } while (Math.abs(lambda - lambdaP) > 1e-12 && ++iter < 200);
+    if (iter >= 200) return haversine(p1, p2);
+
+    var u2 = cos2Alpha * (a * a - b * b) / (b * b);
+    var A = 1 + u2 / 16384 * (4096 + u2 * (-768 + u2 * (320 - 175 * u2)));
+    var B = u2 / 1024 * (256 + u2 * (-128 + u2 * (74 - 47 * u2)));
+    var dSigma = B * sinSigma * (cos2SigmaM + B / 4 * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) -
+      B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
+    var s = b * A * (sigma - dSigma);
+    var az1 = Math.atan2(cosU2 * Math.sin(lambda), cosU1 * sinU2 - sinU1 * cosU2 * Math.cos(lambda));
+    var az2 = Math.atan2(cosU1 * Math.sin(lambda), -sinU1 * cosU2 + cosU1 * sinU2 * Math.cos(lambda));
+    return { s: s, az1: norm360(az1 / RAD), az2: norm360(az2 / RAD) };
+  }
+
+  /* Vincenty direct: titik tujuan dari titik awal, azimut (derajat) & jarak (m) */
+  function direct(p, az, s) {
+    var a = WGS.a, b = WGS.b, f = WGS.f;
+    var a1 = az * RAD, sinA1 = Math.sin(a1), cosA1 = Math.cos(a1);
+    var tanU1 = (1 - f) * Math.tan(p.lat * RAD);
+    var cosU1 = 1 / Math.sqrt(1 + tanU1 * tanU1), sinU1 = tanU1 * cosU1;
+    var sigma1 = Math.atan2(tanU1, cosA1);
+    var sinAlpha = cosU1 * sinA1, cos2Alpha = 1 - sinAlpha * sinAlpha;
+    var u2 = cos2Alpha * (a * a - b * b) / (b * b);
+    var A = 1 + u2 / 16384 * (4096 + u2 * (-768 + u2 * (320 - 175 * u2)));
+    var B = u2 / 1024 * (256 + u2 * (-128 + u2 * (74 - 47 * u2)));
+    var sigma = s / (b * A), sigmaP, iter = 0, cos2SigmaM, sinSigma, cosSigma;
+    do {
+      cos2SigmaM = Math.cos(2 * sigma1 + sigma);
+      sinSigma = Math.sin(sigma); cosSigma = Math.cos(sigma);
+      var dSigma = B * sinSigma * (cos2SigmaM + B / 4 * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) -
+        B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
+      sigmaP = sigma;
+      sigma = s / (b * A) + dSigma;
+    } while (Math.abs(sigma - sigmaP) > 1e-12 && ++iter < 100);
+    var x = sinU1 * sinSigma - cosU1 * cosSigma * cosA1;
+    var lat2 = Math.atan2(sinU1 * cosSigma + cosU1 * sinSigma * cosA1,
+      (1 - f) * Math.sqrt(sinAlpha * sinAlpha + x * x));
+    var lambda = Math.atan2(sinSigma * sinA1, cosU1 * cosSigma - sinU1 * sinSigma * cosA1);
+    var C = f / 16 * cos2Alpha * (4 + f * (4 - 3 * cos2Alpha));
+    var Ld = lambda - (1 - C) * f * sinAlpha *
+      (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)));
+    return { lat: lat2 / RAD, lng: normLng(p.lng + Ld / RAD) };
+  }
+
+  /* Luas poligon pada elipsoid WGS84 (lintang authalik, jari-jari authalik) */
+  function qf(phi) {
+    var s = Math.sin(phi);
+    return (1 - WGS.e2) * (s / (1 - WGS.e2 * s * s) - (1 / (2 * E)) * Math.log((1 - E * s) / (1 + E * s)));
+  }
+  var QP = qf(Math.PI / 2);
+  var RQ = WGS.a * Math.sqrt(QP / 2);
+  function area(pts) {
+    var n = pts.length, sum = 0;
+    if (n < 3) return 0;
+    for (var i = 0; i < n; i++) {
+      var p1 = pts[i], p2 = pts[(i + 1) % n];
+      var dl = (p2.lng - p1.lng) * RAD;
+      if (dl > Math.PI) dl -= 2 * Math.PI; else if (dl < -Math.PI) dl += 2 * Math.PI;
+      sum += dl * (2 + qf(p1.lat * RAD) / QP + qf(p2.lat * RAD) / QP);
+    }
+    return Math.abs(sum * RQ * RQ / 2);
+  }
+
+  /* UTM (deret Krüger orde-4, akurasi sub-milimeter dalam zona) */
+  function toUTM(lat, lng) {
+    if (lat < -80 || lat > 84) return null;
+    var zone = Math.min(60, Math.max(1, Math.floor((lng + 180) / 6) + 1));
+    var lon0 = ((zone - 1) * 6 - 180 + 3) * RAD;
+    var n = WGS.f / (2 - WGS.f), k0 = 0.9996;
+    var n2 = n * n, n3 = n2 * n, n4 = n3 * n;
+    var A = WGS.a / (1 + n) * (1 + n2 / 4 + n4 / 64);
+    var al = [
+      n / 2 - 2 * n2 / 3 + 5 * n3 / 16 + 41 * n4 / 180,
+      13 * n2 / 48 - 3 * n3 / 5 + 557 * n4 / 1440,
+      61 * n3 / 240 - 103 * n4 / 140,
+      49561 * n4 / 161280
+    ];
+    var phi = lat * RAD, dl = lng * RAD - lon0;
+    var sp = Math.sin(phi);
+    var t = Math.sinh(Math.atanh(sp) - E * Math.atanh(E * sp));
+    var xi0 = Math.atan2(t, Math.cos(dl));
+    var eta0 = Math.atanh(Math.sin(dl) / Math.sqrt(1 + t * t));
+    var xi = xi0, eta = eta0;
+    for (var j = 1; j <= 4; j++) {
+      xi += al[j - 1] * Math.sin(2 * j * xi0) * Math.cosh(2 * j * eta0);
+      eta += al[j - 1] * Math.cos(2 * j * xi0) * Math.sinh(2 * j * eta0);
+    }
+    var e = 500000 + k0 * A * eta;
+    var nn = k0 * A * xi;
+    if (lat < 0) nn += 10000000;
+    var south = lat < 0;
+    return { zone: zone, hemi: south ? 'S' : 'N', e: e, n: nn, epsg: (south ? 32700 : 32600) + zone };
+  }
+
+  /* Derajat-menit-detik (LU/LS/BT/BB) */
+  function dms(v, pos, neg) {
+    var h = v >= 0 ? pos : neg;
+    v = Math.abs(v);
+    var d = Math.floor(v), m = Math.floor((v - d) * 60);
+    var s = Math.round(((v - d) * 60 - m) * 60 * 100) / 100;
+    if (s >= 60) { s = 0; m++; }
+    if (m >= 60) { m = 0; d++; }
+    var ss = s.toFixed(2); if (s < 10) ss = '0' + ss;
+    return d + '°' + (m < 10 ? '0' : '') + m + '′' + ss + '″ ' + h;
+  }
+
+  var DIRS = ['U', 'TL', 'T', 'TG', 'S', 'BD', 'B', 'BL'];
+  function compass(az) { return DIRS[Math.round(norm360(az) / 45) % 8]; }
+
+  root.MeasureMath = {
+    WGS: WGS, inverse: inverse, direct: direct, area: area,
+    toUTM: toUTM, dms: dms, compass: compass, norm360: norm360
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* ===== WebGIS Measure — antarmuka & interaksi ===== */
+(function () {
+  'use strict';
+  var MM = window.MeasureMath;
+  if (!MM) return;
+
+  function boot() {
+    var ready = false;
+    try { ready = typeof L !== 'undefined' && typeof map !== 'undefined' && map && map.getContainer; } catch (e) { ready = false; }
+    if (!ready) return setTimeout(boot, 150);
+    try { init(map); } catch (err) { console.error('[Alat Ukur] gagal inisialisasi', err); }
+  }
+
+  function init(map) {
+    /* ---------- util ---------- */
+    var NF = {};
+    function nf(v, d) {
+      var k = d; if (!NF[k]) NF[k] = new Intl.NumberFormat('id-ID', { minimumFractionDigits: d, maximumFractionDigits: d });
+      return NF[k].format(v);
+    }
+    function dec(v) { var a = Math.abs(v); return a >= 1000 ? 1 : a >= 10 ? 2 : 3; }
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function $(id) { return document.getElementById(id); }
+    function ll(p) { return L.latLng(p.lat, p.lng); }
+
+    var LEN = { m: { f: 1, u: 'm' }, km: { f: 1000, u: 'km' }, mi: { f: 1609.344, u: 'mi' }, nmi: { f: 1852, u: 'nmi' }, ft: { f: 0.3048, u: 'ft' } };
+    var ARE = { m2: { f: 1, u: 'm²' }, ha: { f: 1e4, u: 'ha' }, km2: { f: 1e6, u: 'km²' }, acre: { f: 4046.8564224, u: 'acre' }, mi2: { f: 2589988.110336, u: 'mi²' } };
+    var COLORS = ['#22d3ee', '#fbbf24', '#a78bfa', '#34d399', '#f472b6', '#fb923c'];
+    var LIVE_COLOR = '#22d3ee';
+    var MIN_PTS = { distance: 2, area: 3, radius: 2 };
+    var NAMES = { distance: 'Jarak', area: 'Luas', radius: 'Radius', point: 'Titik' };
+    var ICONS = { distance: 'fa-ruler-horizontal', area: 'fa-draw-polygon', radius: 'fa-bullseye', point: 'fa-location-dot' };
+
+    /* ---------- state ---------- */
+    var prefs = { len: 'auto', area: 'auto', coord: 'dd', crosshair: false, segLabels: true };
+    try { var raw = localStorage.getItem('webgis_measure_prefs'); if (raw) Object.assign(prefs, JSON.parse(raw)); } catch (e) { }
+    function savePrefs() { try { localStorage.setItem('webgis_measure_prefs', JSON.stringify(prefs)); } catch (e) { } }
+
+    var S = {
+      active: false, mode: 'distance', pts: [], vtx: [], cursor: null, mouse: null,
+      saved: [], seq: 0, counters: { distance: 0, area: 0, radius: 0, point: 0 },
+      viewId: null, dragging: false, lastT: 0, lastPx: null, raf: 0, detailOpen: window.innerWidth >= 640 && window.innerHeight >= 820
+    };
+
+    /* ---------- panes & layers ---------- */
+    [['ms_shape', 640], ['ms_vertex', 645], ['ms_label', 650]].forEach(function (p) {
+      map.createPane(p[0]).style.zIndex = p[1];
+    });
+    var gSaved = L.layerGroup().addTo(map);
+    var gLive = L.layerGroup().addTo(map);
+    var gVtx = L.layerGroup().addTo(map);
+
+    /* ---------- format ---------- */
+    function lenParts(m, unit) {
+      unit = unit || prefs.len;
+      if (unit === 'auto') unit = m >= 1000 ? 'km' : 'm';
+      var d = LEN[unit], v = m / d.f;
+      return { v: nf(v, dec(v)), u: d.u };
+    }
+    function fmtLen(m, unit) { var p = lenParts(m, unit); return p.v + ' ' + p.u; }
+    function areaParts(m2, unit) {
+      unit = unit || prefs.area;
+      if (unit === 'auto') unit = m2 < 1e4 ? 'm2' : m2 < 1e6 ? 'ha' : 'km2';
+      var d = ARE[unit], v = m2 / d.f;
+      return { v: nf(v, dec(v)), u: d.u };
+    }
+    function fmtArea(m2, unit) { var p = areaParts(m2, unit); return p.v + ' ' + p.u; }
+    function fmtAz(az) { return nf(az, 1) + '° ' + MM.compass(az); }
+    function coordText(p, kind) {
+      kind = kind || prefs.coord;
+      if (kind === 'dms') return MM.dms(p.lat, 'LU', 'LS') + ', ' + MM.dms(p.lng, 'BT', 'BB');
+      if (kind === 'utm') {
+        var u = MM.toUTM(p.lat, p.lng);
+        return u ? 'UTM ' + u.zone + u.hemi + ' · ' + Math.round(u.e) + ' mE · ' + Math.round(u.n) + ' mN' : 'UTM tidak tersedia (di luar 80°S–84°N)';
+      }
+      return p.lat.toFixed(6) + ', ' + p.lng.toFixed(6);
+    }
+    function coordPlain(p, kind) {
+      if (kind === 'utm') { var u = MM.toUTM(p.lat, p.lng); return u ? u.zone + u.hemi + ' ' + Math.round(u.e) + ' ' + Math.round(u.n) : ''; }
+      return coordText(p, kind);
+    }
+
+    /* ---------- geometri ---------- */
+    function mid(a, b, v) {
+      if (v.s < 20000) return { lat: (a.lat + b.lat) / 2, lng: (a.lng + b.lng) / 2 };
+      return MM.direct(a, v.az1, v.s / 2);
+    }
+    function geoPath(a, b, v) {
+      var n = Math.min(48, Math.max(1, Math.ceil(v.s / 20000)));
+      if (n === 1) return [a, b];
+      var out = [a];
+      for (var i = 1; i < n; i++) out.push(MM.direct(a, v.az1, v.s * i / n));
+      out.push(b);
+      return out;
+    }
+    function ring(c, r, n) {
+      var out = [];
+      for (var i = 0; i < n; i++) out.push(MM.direct(c, i * 360 / n, r));
+      return out;
+    }
+    function compute(mode, pts) {
+      var r = { n: pts.length, segs: [], length: 0, perimeter: 0, area: 0, centroid: null, labelAt: null, kinks: false };
+      var i, v;
+      if (mode === 'distance' || mode === 'area') {
+        var cum = 0;
+        for (i = 1; i < pts.length; i++) {
+          v = MM.inverse(pts[i - 1], pts[i]); cum += v.s;
+          r.segs.push({ a: pts[i - 1], b: pts[i], len: v.s, az: v.az1, cum: cum, v: v });
+        }
+        r.length = cum;
+        if (mode === 'area' && pts.length >= 3) {
+          var cv = MM.inverse(pts[pts.length - 1], pts[0]);
+          r.closing = { a: pts[pts.length - 1], b: pts[0], len: cv.s, az: cv.az1, v: cv };
+          r.perimeter = cum + cv.s;
+          r.area = MM.area(pts);
+          r.centroid = polyCentroid(pts);
+          r.labelAt = polyLabel(pts) || r.centroid;
+          r.kinks = hasKinks(pts);
+        }
+      } else if (mode === 'radius' && pts.length >= 2) {
+        v = MM.inverse(pts[0], pts[1]);
+        r.radius = v.s; r.az = v.az1; r.diameter = 2 * v.s; r.circumference = 2 * Math.PI * v.s;
+        r.ring = ring(pts[0], v.s, 96); r.area = MM.area(r.ring); r.centroid = pts[0];
+      } else if (mode === 'point' && pts.length >= 1) {
+        r.coord = pts[pts.length - 1];
+      }
+      return r;
+    }
+    function turfPoly(pts) {
+      var c = pts.map(function (p) { return [p.lng, p.lat]; }); c.push(c[0]);
+      return turf.polygon([c]);
+    }
+    function polyCentroid(pts) {
+      try { var g = turf.centerOfMass(turfPoly(pts)).geometry.coordinates; return { lat: g[1], lng: g[0] }; }
+      catch (e) { return avg(pts); }
+    }
+    function polyLabel(pts) {
+      try { var g = turf.pointOnFeature(turfPoly(pts)).geometry.coordinates; return { lat: g[1], lng: g[0] }; }
+      catch (e) { return null; }
+    }
+    function hasKinks(pts) {
+      try { return pts.length >= 4 && turf.kinks(turfPoly(pts)).features.length > 0; } catch (e) { return false; }
+    }
+    function avg(pts) {
+      var s = pts.reduce(function (a, p) { return { lat: a.lat + p.lat, lng: a.lng + p.lng }; }, { lat: 0, lng: 0 });
+      return { lat: s.lat / pts.length, lng: s.lng / pts.length };
+    }
+    function pxDist(a, b) { return map.latLngToContainerPoint(ll(a)).distanceTo(map.latLngToContainerPoint(ll(b))); }
+
+    /* ---------- label & ikon ---------- */
+    function labelMarker(p, html, cls) {
+      return L.marker(ll(p), {
+        icon: L.divIcon({ className: 'ms-lbl', html: '<span class="ms-lbl-in ' + (cls || '') + '">' + html + '</span>', iconSize: [0, 0] }),
+        interactive: false, keyboard: false, pane: 'ms_label'
+      });
+    }
+    function vtxIcon(cls) {
+      return L.divIcon({ className: 'ms-vtx ' + cls, html: '<span class="ms-v"></span>', iconSize: [26, 26], iconAnchor: [13, 13] });
+    }
+    function pinIcon(color) {
+      return L.divIcon({
+        className: 'ms-pin', iconSize: [0, 0],
+        html: '<span class="ms-pin-in" style="--c:' + color + '"><i class="fa-solid fa-location-dot"></i></span>'
+      });
+    }
+
+    /* ---------- builder bentuk ---------- */
+    function buildShape(mode, pts, o) {
+      var g = L.layerGroup(), col = o.color, live = !!o.live;
+      var base = { pane: 'ms_shape', interactive: false, lineJoin: 'round', lineCap: 'round' };
+      var i, c;
+      function halo(path, closed) {
+        (closed ? L.polygon : L.polyline)(path, Object.assign({}, base, { color: '#020617', weight: 7, opacity: 0.5, fill: false })).addTo(g);
+      }
+      if (mode === 'point') {
+        pts.forEach(function (p) {
+          L.marker(ll(p), { icon: pinIcon(col), interactive: false, keyboard: false, pane: 'ms_vertex' }).addTo(g);
+          labelMarker(p, esc(coordText(p)), 'ms-l-coord').addTo(g);
+        });
+        return g;
+      }
+      if (!pts.length) return g;
+      c = compute(mode, pts);
+
+      if (mode === 'radius') {
+        var cen = pts[0];
+        if (pts.length >= 2) {
+          var rp = c.ring.map(ll);
+          L.polygon(rp, Object.assign({}, base, { color: col, weight: 3, fillColor: col, fillOpacity: 0.14, dashArray: live ? '7 6' : null })).addTo(g);
+          var spoke = [ll(cen), ll(pts[1])];
+          halo(spoke); L.polyline(spoke, Object.assign({}, base, { color: col, weight: 2.5, dashArray: '2 6' })).addTo(g);
+          labelMarker(mid(cen, pts[1], { s: c.radius, az1: c.az }), 'r = ' + fmtLen(c.radius), 'ms-l-seg').addTo(g);
+          labelMarker(cen, (o.name ? '<small>' + esc(o.name) + '</small>' : '') + 'Luas ' + fmtArea(c.area), 'ms-l-total ms-below').addTo(g);
+        }
+        if (!live) pts.forEach(function (p) { dot(p, col).addTo(g); });
+        return g;
+      }
+
+      /* distance & area */
+      var path = [];
+      c.segs.forEach(function (s, idx) {
+        var seg = geoPath(s.a, s.b, s.v);
+        path = idx === 0 ? seg.slice() : path.concat(seg.slice(1));
+      });
+      if (pts.length === 1) path = [pts[0]];
+      var closed = mode === 'area' && pts.length >= 3;
+
+      if (closed) {
+        var cp = path.concat(geoPath(c.closing.a, c.closing.b, c.closing.v).slice(1)).map(ll);
+        L.polygon(cp, Object.assign({}, base, { stroke: false, fillColor: col, fillOpacity: 0.16 })).addTo(g);
+        halo(cp, true);
+        L.polygon(cp, Object.assign({}, base, { color: col, weight: 3, fill: false, dashArray: live ? '7 6' : null })).addTo(g);
+      } else if (path.length > 1) {
+        var lp = path.map(ll);
+        halo(lp);
+        L.polyline(lp, Object.assign({}, base, { color: col, weight: 3, dashArray: live ? '7 6' : null })).addTo(g);
+      }
+
+      /* label segmen (declutter berdasarkan jarak piksel) */
+      if (prefs.segLabels) {
+        var segs = c.segs.slice(); if (c.closing) segs.push(c.closing);
+        segs.forEach(function (s) {
+          if (pxDist(s.a, s.b) >= 64) labelMarker(mid(s.a, s.b, s.v), fmtLen(s.len), 'ms-l-seg').addTo(g);
+        });
+      }
+      /* label total */
+      var nm = o.name ? '<small>' + esc(o.name) + '</small>' : '';
+      if (closed) {
+        labelMarker(c.labelAt, nm + fmtArea(c.area) + '<small>Keliling ' + fmtLen(c.perimeter) + '</small>', 'ms-l-total ms-center').addTo(g);
+      } else if (mode === 'distance' && pts.length >= 2) {
+        labelMarker(pts[pts.length - 1], nm + 'Σ ' + fmtLen(c.length), 'ms-l-total').addTo(g);
+      }
+      if (!live) pts.forEach(function (p) { dot(p, col).addTo(g); });
+      return g;
+    }
+    function dot(p, col) {
+      return L.circleMarker(ll(p), { radius: 4.5, color: '#fff', weight: 2, fillColor: col, fillOpacity: 1, pane: 'ms_vertex', interactive: false });
+    }
+
+    /* ---------- gambar ulang ---------- */
+    function viewData() {
+      if (S.viewId) {
+        var it = S.saved.filter(function (x) { return x.id === S.viewId; })[0];
+        if (it) return { mode: it.mode, pts: it.pts, item: it, live: false };
+        S.viewId = null;
+      }
+      var pts = S.pts.slice(), live = false;
+      var needsCursor = S.mode !== 'point' && pts.length > 0 && !(S.mode === 'radius' && pts.length >= 2);
+      if (S.cursor && needsCursor) { pts.push(S.cursor); live = true; }
+      return { mode: S.mode, pts: pts, live: live };
+    }
+    function drawLive() {
+      gLive.clearLayers();
+      if (!S.active || S.mode === 'point' || !S.pts.length) return;
+      var v = viewData();
+      if (v.item) return;
+      gLive.addLayer(buildShape(S.mode, v.pts, { color: LIVE_COLOR, live: true }));
+    }
+    function rebuildSaved() {
+      gSaved.clearLayers();
+      S.saved.forEach(function (it) {
+        gSaved.addLayer(buildShape(it.mode, it.pts, { color: it.color, name: it.name }));
+      });
+    }
+    function scheduleDraw() {
+      if (S.raf) return;
+      S.raf = 1;
+      requestAnimationFrame(function () { S.raf = 0; drawLive(); updateDynamic(); });
+    }
+
+    /* ---------- vertex editable ---------- */
+    function vtxClass(i) {
+      var n = S.pts.length, cls = '';
+      if (S.mode === 'area' && i === 0 && n >= 3) cls += ' ms-v-close';
+      if (i === n - 1 && n >= (MIN_PTS[S.mode] || 99)) cls += ' ms-v-last';
+      if (i === 0) cls += ' ms-v-first';
+      return cls;
+    }
+    function syncVertices() {
+      while (S.vtx.length > S.pts.length) gVtx.removeLayer(S.vtx.pop());
+      while (S.vtx.length < S.pts.length) addVtx();
+      if (S.dragging) return;
+      S.vtx.forEach(function (m, i) {
+        var cls = vtxClass(i);
+        if (m._msCls !== cls) { m._msCls = cls; m.setIcon(vtxIcon(cls)); }
+        m.setLatLng(ll(S.pts[i]));
+      });
+    }
+    function addVtx() {
+      var i = S.vtx.length;
+      var m = L.marker(ll(S.pts[i]), {
+        draggable: true, icon: vtxIcon(''), pane: 'ms_vertex', keyboard: false, bubblingMouseEvents: false, autoPan: false
+      });
+      m._msCls = '';
+      m.on('dragstart', function () { S.dragging = true; });
+      m.on('drag', function (e) {
+        var idx = S.vtx.indexOf(m); if (idx < 0) return;
+        S.pts[idx] = { lat: e.latlng.lat, lng: e.latlng.lng };
+        scheduleDraw();
+      });
+      m.on('dragend', function () { S.dragging = false; syncVertices(); scheduleDraw(); });
+      m.on('click', function () { onVertexClick(S.vtx.indexOf(m)); });
+      gVtx.addLayer(m);
+      S.vtx.push(m);
+    }
+    function onVertexClick(idx) {
+      var n = S.pts.length;
+      if (S.mode === 'area' && idx === 0 && n >= 3) return finish();
+      if (idx === n - 1 && n >= (MIN_PTS[S.mode] || 99)) return finish();
+    }
+
+    /* ---------- aksi ---------- */
+    function addPoint(latlng) {
+      var now = performance.now();
+      var px = map.latLngToContainerPoint(latlng);
+      if (S.lastPx && now - S.lastT < 380 && S.lastPx.distanceTo(px) < 10) return; // dedupe double-click/tap
+      S.lastT = now; S.lastPx = px;
+      var p = { lat: latlng.lat, lng: latlng.lng };
+      if (S.mode === 'point') { savePoint(p); return; }
+      if (S.viewId) S.viewId = null;
+      S.pts.push(p);
+      if (S.mode === 'radius' && S.pts.length === 2) { finish(); return; }
+      syncVertices(); scheduleDraw(); renderSaved();
+    }
+    function nextColor() { return COLORS[S.seq % COLORS.length]; }
+    function finish() {
+      var need = MIN_PTS[S.mode];
+      if (!need) return;
+      if (S.pts.length < need) { toast('Butuh minimal ' + need + ' titik untuk ' + NAMES[S.mode].toLowerCase()); return; }
+      S.counters[S.mode]++; S.seq++;
+      var it = { id: S.seq, mode: S.mode, pts: S.pts.map(function (p) { return { lat: p.lat, lng: p.lng }; }), color: COLORS[(S.seq - 1) % COLORS.length], name: NAMES[S.mode] + ' ' + S.counters[S.mode] };
+      S.saved.push(it);
+      clearSession(true);
+      S.viewId = it.id;
+      rebuildSaved(); scheduleDraw(); renderSaved(); updateBadge();
+      toast(it.name + ' tersimpan');
+    }
+    function savePoint(p) {
+      S.counters.point++; S.seq++;
+      var it = { id: S.seq, mode: 'point', pts: [p], color: COLORS[(S.seq - 1) % COLORS.length], name: 'Titik ' + S.counters.point };
+      S.saved.push(it); S.viewId = it.id;
+      rebuildSaved(); scheduleDraw(); renderSaved(); updateBadge();
+    }
+    function clearSession(silent) {
+      S.pts = []; S.cursor = S.cursor; syncVertices();
+      gLive.clearLayers();
+      if (!silent) { S.viewId = null; scheduleDraw(); }
+    }
+    function undo() {
+      if (S.pts.length) { S.pts.pop(); syncVertices(); scheduleDraw(); return; }
+      if (S.saved.length) { var it = S.saved.pop(); S.viewId = null; rebuildSaved(); renderSaved(); updateBadge(); scheduleDraw(); toast(it.name + ' dihapus'); }
+    }
+    function removeItem(id) {
+      S.saved = S.saved.filter(function (x) { return x.id !== id; });
+      if (S.viewId === id) S.viewId = null;
+      rebuildSaved(); renderSaved(); updateBadge(); scheduleDraw();
+    }
+    function clearAll() {
+      S.pts = []; S.saved = []; S.viewId = null; S.counters = { distance: 0, area: 0, radius: 0, point: 0 };
+      syncVertices(); rebuildSaved(); gLive.clearLayers(); renderSaved(); updateBadge(); scheduleDraw();
+    }
+    function zoomTo(it) {
+      var b = L.latLngBounds(it.pts.map(ll));
+      if (it.mode === 'radius') { var c = compute('radius', it.pts); b = L.latLngBounds(c.ring.map(ll)); }
+      if (it.mode === 'point') map.flyTo(ll(it.pts[0]), Math.max(map.getZoom(), 15), { duration: 0.6 });
+      else map.flyToBounds(b.pad(0.25), { duration: 0.6, maxZoom: 18 });
+    }
+    function setMode(m) {
+      if (S.mode === m) return;
+      if (S.pts.length >= (MIN_PTS[S.mode] || 99)) finish();
+      S.mode = m; S.pts = []; S.viewId = null; syncVertices(); gLive.clearLayers();
+      renderTabs(); renderSaved(); scheduleDraw(); updateDynamic();
+    }
+
+    /* ---------- ekspor ---------- */
+    function itemMetrics(it) {
+      var c = compute(it.mode, it.pts), p = { name: it.name, type: it.mode, datum: 'WGS84 (EPSG:4326)', points: it.pts.length };
+      if (it.mode === 'distance') { p.length_m = +c.length.toFixed(3); }
+      if (it.mode === 'area') { p.area_m2 = +c.area.toFixed(3); p.perimeter_m = +c.perimeter.toFixed(3); p.area_ha = +(c.area / 1e4).toFixed(4); }
+      if (it.mode === 'radius') { p.radius_m = +c.radius.toFixed(3); p.area_m2 = +c.area.toFixed(3); p.circumference_m = +c.circumference.toFixed(3); }
+      return { p: p, c: c };
+    }
+    function toGeoJSON() {
+      var feats = [];
+      S.saved.forEach(function (it) {
+        var m = itemMetrics(it), co = it.pts.map(function (p) { return [+p.lng.toFixed(8), +p.lat.toFixed(8)]; }), geom;
+        if (it.mode === 'point') geom = { type: 'Point', coordinates: co[0] };
+        else if (it.mode === 'distance') geom = { type: 'LineString', coordinates: co };
+        else if (it.mode === 'area') geom = { type: 'Polygon', coordinates: [co.concat([co[0]])] };
+        else { var r = m.c.ring.map(function (p) { return [+p.lng.toFixed(8), +p.lat.toFixed(8)]; }); r.push(r[0]); geom = { type: 'Polygon', coordinates: [r] }; m.p.center = co[0]; }
+        feats.push({ type: 'Feature', properties: m.p, geometry: geom });
+      });
+      return { type: 'FeatureCollection', features: feats };
+    }
+    function itemText(it) {
+      var m = itemMetrics(it), c = m.c, t = [it.name];
+      if (it.mode === 'distance') t.push('Total: ' + fmtLen(c.length) + ' (' + nf(c.length, 2) + ' m)');
+      if (it.mode === 'area') { t.push('Luas: ' + fmtArea(c.area) + ' (' + nf(c.area / 1e4, 4) + ' ha)'); t.push('Keliling: ' + fmtLen(c.perimeter)); }
+      if (it.mode === 'radius') { t.push('Radius: ' + fmtLen(c.radius)); t.push('Luas: ' + fmtArea(c.area)); t.push('Keliling: ' + fmtLen(c.circumference)); }
+      it.pts.forEach(function (p, i) { t.push((i + 1) + '. ' + coordText(p)); });
+      return t.join('\n');
+    }
+    function copyText(txt, okMsg) {
+      function fallback() {
+        var ta = document.createElement('textarea'); ta.value = txt; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        var ok = false; try { ok = document.execCommand('copy'); } catch (e) { }
+        document.body.removeChild(ta); toast(ok ? okMsg : 'Gagal menyalin');
+      }
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(function () { toast(okMsg); }, fallback);
+      else fallback();
+    }
+    function downloadGeoJSON() {
+      if (!S.saved.length) return toast('Belum ada hasil ukur untuk diekspor');
+      var d = new Date(), z = function (n) { return (n < 10 ? '0' : '') + n; };
+      var name = 'pengukuran_' + d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + '_' + z(d.getHours()) + z(d.getMinutes()) + '.geojson';
+      var blob = new Blob([JSON.stringify(toGeoJSON(), null, 2)], { type: 'application/geo+json' });
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+      toast('GeoJSON diunduh');
+    }
+
+    /* ============================================================ */
+    /*  UI                                                           */
+    /* ============================================================ */
+    var main = document.querySelector('main') || document.body;
+    var fab = document.createElement('button');
+    fab.id = 'ms-fab'; fab.type = 'button'; fab.setAttribute('aria-label', 'Buka alat ukur'); fab.title = 'Alat Ukur (jarak, luas, radius, koordinat)';
+    fab.innerHTML = '<i class="fa-solid fa-ruler-combined"></i><span class="ms-fab-badge" id="ms-fab-badge" hidden>0</span>';
+    main.appendChild(fab);
+
+    var panel = document.createElement('section');
+    panel.id = 'ms-panel'; panel.hidden = true; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Alat ukur');
+    panel.innerHTML =
+      '<div class="ms-head">' +
+        '<div class="ms-title"><i class="fa-solid fa-ruler-combined"></i><span>Alat Ukur</span><em>WGS84</em></div>' +
+        '<div class="ms-head-btns">' +
+          '<button type="button" data-ms="detail" id="ms-detail-btn" aria-label="Detail dan pengaturan" title="Detail & pengaturan"><i class="fa-solid fa-sliders"></i></button>' +
+          '<button type="button" data-ms="close" aria-label="Tutup alat ukur" title="Tutup (Esc)"><i class="fa-solid fa-xmark"></i></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ms-tabs" id="ms-tabs" role="tablist"></div>' +
+      '<div class="ms-readout" id="ms-readout" aria-live="polite"></div>' +
+      '<div class="ms-actions" id="ms-actions">' +
+        '<button type="button" data-ms="undo" id="ms-undo" title="Urungkan titik (Backspace / Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i><span>Urung</span></button>' +
+        '<button type="button" data-ms="add" id="ms-add" class="ms-add" title="Tambah titik di crosshair (Spasi)"><i class="fa-solid fa-plus"></i><span>Titik</span></button>' +
+        '<button type="button" data-ms="finish" id="ms-finish" class="ms-primary" title="Selesaikan pengukuran (Enter / klik dua kali)"><i class="fa-solid fa-check"></i><span>Selesai</span></button>' +
+        '<button type="button" data-ms="reset" id="ms-reset" title="Batalkan pengukuran berjalan (Esc)"><i class="fa-solid fa-eraser"></i><span>Batal</span></button>' +
+      '</div>' +
+      '<div class="ms-detail" id="ms-detail">' +
+        '<div class="ms-grid">' +
+          '<label>Panjang<select id="ms-s-len"><option value="auto">Otomatis (m/km)</option><option value="m">Meter (m)</option><option value="km">Kilometer (km)</option><option value="mi">Mil (mi)</option><option value="nmi">Mil laut (nmi)</option><option value="ft">Kaki (ft)</option></select></label>' +
+          '<label>Luas<select id="ms-s-area"><option value="auto">Otomatis</option><option value="m2">Meter² (m²)</option><option value="ha">Hektar (ha)</option><option value="km2">Kilometer² (km²)</option><option value="acre">Acre</option><option value="mi2">Mil² (mi²)</option></select></label>' +
+          '<label>Koordinat<select id="ms-s-coord"><option value="dd">Derajat desimal</option><option value="dms">Derajat-menit-detik</option><option value="utm">UTM</option></select></label>' +
+        '</div>' +
+        '<div class="ms-toggles">' +
+          '<label class="ms-sw"><input type="checkbox" id="ms-s-cross"><span></span>Crosshair presisi</label>' +
+          '<label class="ms-sw"><input type="checkbox" id="ms-s-seg"><span></span>Label segmen</label>' +
+        '</div>' +
+        '<div id="ms-conv"></div>' +
+        '<div id="ms-segs"></div>' +
+        '<div class="ms-sec-head"><b>Hasil ukur <i id="ms-count">0</i></b>' +
+          '<span><button type="button" data-ms="dl" title="Unduh GeoJSON"><i class="fa-solid fa-download"></i></button>' +
+          '<button type="button" data-ms="copyjson" title="Salin GeoJSON"><i class="fa-solid fa-code"></i></button>' +
+          '<button type="button" data-ms="clearall" title="Hapus semua hasil"><i class="fa-solid fa-trash-can"></i></button></span></div>' +
+        '<div id="ms-saved"></div>' +
+      '</div>' +
+      '<div class="ms-foot"><i class="fa-solid fa-crosshairs"></i><span id="ms-cursor">Arahkan kursor ke peta</span></div>' +
+      '<div class="ms-hint" id="ms-hint"></div>';
+    main.appendChild(panel);
+
+    var cross = document.createElement('div');
+    cross.id = 'ms-cross'; cross.hidden = true;
+    cross.innerHTML = '<svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><circle cx="32" cy="32" r="3" fill="#22d3ee"/><circle cx="32" cy="32" r="14" fill="none" stroke="#fff" stroke-width="2"/><path d="M32 4v16M32 44v16M4 32h16M44 32h16" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M32 4v16M32 44v16M4 32h16M44 32h16" stroke="#0f172a" stroke-opacity=".45" stroke-width="5" stroke-linecap="round" style="mix-blend-mode:multiply" /></svg>';
+    map.getContainer().appendChild(cross);
+
+    var toastEl = document.createElement('div');
+    toastEl.id = 'ms-toast'; toastEl.setAttribute('role', 'status'); main.appendChild(toastEl);
+    var toastT = 0;
+    function toast(msg) {
+      toastEl.textContent = msg; toastEl.classList.add('on');
+      clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove('on'); }, 2200);
+    }
+
+    function renderTabs() {
+      $('ms-tabs').innerHTML = ['distance', 'area', 'radius', 'point'].map(function (m) {
+        return '<button type="button" role="tab" data-mode="' + m + '" aria-selected="' + (S.mode === m) + '" class="' + (S.mode === m ? 'on' : '') + '">' +
+          '<i class="fa-solid ' + ICONS[m] + '"></i><span>' + NAMES[m] + '</span></button>';
+      }).join('');
+    }
+    function updateBadge() {
+      var b = $('ms-fab-badge'); b.textContent = S.saved.length; b.hidden = !S.saved.length;
+      $('ms-count').textContent = S.saved.length;
+    }
+    function stat(label, val) { return '<div><span>' + label + '</span><b>' + val + '</b></div>'; }
+    function copyBtn(txt) { return '<button type="button" class="ms-cp" data-copy="' + esc(txt) + '" aria-label="Salin"><i class="fa-regular fa-copy"></i></button>'; }
+
+    function updateDynamic() {
+      if (!S.active) return;
+      var v = viewData(), n = v.pts.length, c = n ? compute(v.mode, v.pts) : null;
+      var main_ = '', sub = '', conv = '', segs = '', tag = v.item ? v.item.name : (v.live ? 'Sementara' : 'Berjalan');
+      var mode = v.mode, convHtml = '';
+
+      if (mode === 'distance') {
+        var lp = lenParts(c ? c.length : 0);
+        main_ = '<div class="ms-lab">Total jarak <u>' + tag + '</u></div><div class="ms-val">' + lp.v + '<small>' + lp.u + '</small></div>';
+        if (c && c.segs.length) {
+          var ls = c.segs[c.segs.length - 1];
+          sub = stat('Segmen akhir', fmtLen(ls.len)) + stat('Azimut', fmtAz(ls.az)) + stat('Titik', n);
+          convHtml = convChips(c.length, LEN, 'len');
+        } else sub = stat('Segmen akhir', '—') + stat('Azimut', '—') + stat('Titik', n);
+      } else if (mode === 'area') {
+        var ap = areaParts(c && c.area ? c.area : 0);
+        main_ = '<div class="ms-lab">Luas area <u>' + tag + '</u></div><div class="ms-val">' + ap.v + '<small>' + ap.u + '</small></div>';
+        if (c && c.area) {
+          sub = stat('Keliling', fmtLen(c.perimeter)) + stat('Titik', n) + stat('Pusat', '<span class="ms-mono">' + nf(c.centroid.lat, 4) + ', ' + nf(c.centroid.lng, 4) + '</span>');
+          convHtml = convChips(c.area, ARE, 'area');
+          if (c.centroid) convHtml += '<div class="ms-row"><span>Pusat massa</span><code>' + esc(coordText(c.centroid)) + '</code>' + copyBtn(coordPlain(c.centroid, prefs.coord)) + '</div>';
+          if (c.kinks) convHtml += '<div class="ms-warn"><i class="fa-solid fa-triangle-exclamation"></i> Poligon berpotongan sendiri — luas mungkin tidak valid.</div>';
+        } else sub = stat('Keliling', '—') + stat('Titik', n) + stat('Pusat', '—');
+      } else if (mode === 'radius') {
+        var rp = lenParts(c && c.radius ? c.radius : 0);
+        main_ = '<div class="ms-lab">Radius <u>' + tag + '</u></div><div class="ms-val">' + rp.v + '<small>' + rp.u + '</small></div>';
+        if (c && c.radius) {
+          sub = stat('Diameter', fmtLen(c.diameter)) + stat('Keliling', fmtLen(c.circumference)) + stat('Luas', fmtArea(c.area));
+          convHtml = convChips(c.radius, LEN, 'len') + '<div class="ms-row"><span>Pusat</span><code>' + esc(coordText(c.centroid)) + '</code>' + copyBtn(coordPlain(c.centroid, prefs.coord)) + '</div>';
+        } else sub = stat('Diameter', '—') + stat('Keliling', '—') + stat('Luas', '—');
+      } else {
+        var p = c && c.coord;
+        main_ = '<div class="ms-lab">Koordinat <u>' + (v.item ? v.item.name : 'Klik peta') + '</u></div>' +
+          '<div class="ms-val ms-val-sm ms-mono">' + (p ? esc(coordText(p)) : '—') + '</div>';
+        if (p) {
+          var u = MM.toUTM(p.lat, p.lng);
+          convHtml = ['dd', 'dms', 'utm'].map(function (k) {
+            return '<div class="ms-row"><span>' + { dd: 'DD', dms: 'DMS', utm: 'UTM' }[k] + '</span><code>' + esc(coordText(p, k)) + '</code>' + copyBtn(coordPlain(p, k)) + '</div>';
+          }).join('') + (u ? '<div class="ms-row"><span>EPSG</span><code>' + u.epsg + ' (WGS 84 / UTM ' + u.zone + u.hemi + ')</code></div>' : '');
+        }
+      }
+      $('ms-readout').innerHTML = main_ + (sub ? '<div class="ms-sub">' + sub + '</div>' : '');
+      $('ms-conv').innerHTML = convHtml;
+
+      /* tabel segmen */
+      if (c && c.segs && c.segs.length && (mode === 'distance' || mode === 'area')) {
+        var rows = c.segs.map(function (s, i) {
+          return '<tr><td>' + (i + 1) + '</td><td>' + fmtLen(s.len) + '</td><td>' + fmtAz(s.az) + '</td><td>' + fmtLen(s.cum) + '</td></tr>';
+        });
+        if (c.closing) rows.push('<tr class="ms-close"><td>↺</td><td>' + fmtLen(c.closing.len) + '</td><td>' + fmtAz(c.closing.az) + '</td><td>' + fmtLen(c.perimeter) + '</td></tr>');
+        segs = '<div class="ms-sec-head"><b>Segmen</b></div><div class="ms-tbl"><table><thead><tr><th>#</th><th>Jarak</th><th>Azimut</th><th>Kumulatif</th></tr></thead><tbody>' + rows.join('') + '</tbody></table></div>';
+      }
+      $('ms-segs').innerHTML = segs;
+
+      /* tombol */
+      var need = MIN_PTS[S.mode];
+      $('ms-undo').disabled = !(S.pts.length || S.saved.length);
+      $('ms-finish').disabled = !need || S.pts.length < need;
+      $('ms-finish').hidden = S.mode === 'point';
+      $('ms-reset').disabled = !S.pts.length;
+      $('ms-reset').hidden = S.mode === 'point';
+      $('ms-add').hidden = !prefs.crosshair;
+      $('ms-actions').classList.toggle('ms-has-add', prefs.crosshair);
+
+      var touch = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
+      var act = prefs.crosshair ? 'Geser peta, lalu tekan <b>+ Titik</b> (atau Spasi)' : (touch ? 'Ketuk peta untuk menambah titik' : 'Klik peta untuk menambah titik');
+      var fin = S.mode === 'point' ? '' : (touch ? ' · tekan <b>Selesai</b>' : ' · klik dua kali / <b>Enter</b> untuk selesai');
+      $('ms-hint').innerHTML = act + fin + (S.mode !== 'point' ? ' · seret titik untuk mengubah' : '');
+    }
+    function convChips(v, table, kind) {
+      return '<div class="ms-chips">' + Object.keys(table).map(function (k) {
+        var p = kind === 'len' ? lenParts(v, k) : areaParts(v, k);
+        return '<span><b>' + p.v + '</b> ' + p.u + '</span>';
+      }).join('') + '</div>';
+    }
+    function renderSaved() {
+      var el = $('ms-saved');
+      if (!S.saved.length) { el.innerHTML = '<div class="ms-empty">Belum ada hasil. Selesaikan pengukuran untuk menyimpannya di sini.</div>'; return; }
+      el.innerHTML = S.saved.slice().reverse().map(function (it) {
+        var c = compute(it.mode, it.pts), val;
+        if (it.mode === 'distance') val = fmtLen(c.length) + ' · ' + it.pts.length + ' titik';
+        else if (it.mode === 'area') val = fmtArea(c.area) + ' · kel. ' + fmtLen(c.perimeter);
+        else if (it.mode === 'radius') val = 'r ' + fmtLen(c.radius) + ' · ' + fmtArea(c.area);
+        else val = esc(coordText(it.pts[0]));
+        return '<div class="ms-item' + (S.viewId === it.id ? ' on' : '') + '" data-id="' + it.id + '">' +
+          '<span class="ms-dot" style="background:' + it.color + '"></span>' +
+          '<button type="button" class="ms-item-main" data-ms="view"><b>' + esc(it.name) + '</b><span>' + val + '</span></button>' +
+          '<button type="button" data-ms="zoom" aria-label="Zoom ke hasil" title="Zoom"><i class="fa-solid fa-magnifying-glass-location"></i></button>' +
+          '<button type="button" data-ms="copyitem" aria-label="Salin" title="Salin"><i class="fa-regular fa-copy"></i></button>' +
+          '<button type="button" data-ms="del" aria-label="Hapus" title="Hapus"><i class="fa-solid fa-trash-can"></i></button></div>';
+      }).join('');
+    }
+    function syncSettings() {
+      $('ms-s-len').value = prefs.len; $('ms-s-area').value = prefs.area; $('ms-s-coord').value = prefs.coord;
+      $('ms-s-cross').checked = !!prefs.crosshair; $('ms-s-seg').checked = !!prefs.segLabels;
+      panel.classList.toggle('ms-detail-open', S.detailOpen);
+      $('ms-detail-btn').classList.toggle('on', S.detailOpen);
+    }
+    function applyCrosshair() {
+      cross.hidden = !(S.active && prefs.crosshair);
+      if (S.active && prefs.crosshair) S.cursor = cursorFromCenter(); else if (prefs.crosshair === false) S.cursor = null;
+    }
+    function cursorFromCenter() { var c = map.getCenter(); return { lat: c.lat, lng: c.lng }; }
+
+    /* ---------- event panel ---------- */
+    panel.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-ms],[data-mode],[data-copy]');
+      if (!t) return;
+      if (t.hasAttribute('data-mode')) return setMode(t.getAttribute('data-mode'));
+      if (t.hasAttribute('data-copy')) return copyText(t.getAttribute('data-copy'), 'Koordinat disalin');
+      var a = t.getAttribute('data-ms'), row = t.closest('.ms-item'), id = row ? +row.getAttribute('data-id') : 0;
+      var it = id ? S.saved.filter(function (x) { return x.id === id; })[0] : null;
+      switch (a) {
+        case 'close': close(); break;
+        case 'detail': S.detailOpen = !S.detailOpen; syncSettings(); break;
+        case 'undo': undo(); break;
+        case 'finish': finish(); break;
+        case 'reset': clearSession(); break;
+        case 'add': addPoint(map.getCenter()); break;
+        case 'dl': downloadGeoJSON(); break;
+        case 'copyjson': if (!S.saved.length) toast('Belum ada hasil ukur'); else copyText(JSON.stringify(toGeoJSON()), 'GeoJSON disalin'); break;
+        case 'clearall': if (S.saved.length || S.pts.length) { if (confirm('Hapus semua hasil pengukuran?')) clearAll(); } break;
+        case 'view': if (it) { S.viewId = it.id; if (S.mode !== it.mode) { S.mode = it.mode; renderTabs(); } renderSaved(); updateDynamic(); } break;
+        case 'zoom': if (it) zoomTo(it); break;
+        case 'copyitem': if (it) copyText(itemText(it), it.name + ' disalin'); break;
+        case 'del': if (it) removeItem(it.id); break;
+      }
+    });
+    function bindSel(id, key) { $(id).addEventListener('change', function () { prefs[key] = this.value; savePrefs(); rebuildSaved(); renderSaved(); scheduleDraw(); updateDynamic(); }); }
+    bindSel('ms-s-len', 'len'); bindSel('ms-s-area', 'area'); bindSel('ms-s-coord', 'coord');
+    $('ms-s-cross').addEventListener('change', function () { prefs.crosshair = this.checked; savePrefs(); applyCrosshair(); scheduleDraw(); updateDynamic(); });
+    $('ms-s-seg').addEventListener('change', function () { prefs.segLabels = this.checked; savePrefs(); rebuildSaved(); scheduleDraw(); });
+
+    fab.addEventListener('click', function () { S.active ? close() : open(); });
+
+    /* ---------- event peta ---------- */
+    function onMapClick(e) { if (!prefs.crosshair) addPoint(e.latlng); }
+    function onDbl() { if (S.mode !== 'point' && !prefs.crosshair) finish(); }
+    function onMove(e) {
+      S.mouse = e.latlng;
+      var cv = $('ms-cursor');
+      if (cv) cv.textContent = coordText({ lat: e.latlng.lat, lng: e.latlng.lng });
+      if (!prefs.crosshair && S.pts.length) { S.cursor = { lat: e.latlng.lat, lng: e.latlng.lng }; scheduleDraw(); }
+    }
+    function onOut() { if (!prefs.crosshair) { S.cursor = null; scheduleDraw(); } }
+    function onMapMove() {
+      var c = map.getCenter();
+      if (prefs.crosshair) { S.cursor = { lat: c.lat, lng: c.lng }; scheduleDraw(); }
+      var cv = $('ms-cursor');
+      if (cv && prefs.crosshair) cv.textContent = coordText({ lat: c.lat, lng: c.lng });
+    }
+    function onZoomEnd() { rebuildSaved(); scheduleDraw(); }
+    /* cegah handler klik peta lama (resetSelection) saat alat ukur aktif */
+    map.getContainer().addEventListener('click', function (e) { if (S.active) e._gisFeatureClicked = true; }, true);
+
+    function onKey(e) {
+      if (!S.active) return;
+      var tag = (e.target && e.target.tagName) || '';
+      var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+      if (e.key === 'Escape') { e.preventDefault(); if (S.pts.length) clearSession(); else close(); return; }
+      if (typing) return;
+      var onBtn = tag === 'BUTTON';
+      if (onBtn && (e.key === 'Enter' || e.key === ' ')) return; // biarkan tombol fokus bekerja normal
+      if (e.key === 'Enter') { e.preventDefault(); finish(); }
+      else if (e.key === 'Backspace' || e.key === 'Delete' || ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z'))) { e.preventDefault(); undo(); }
+      else if (e.key === ' ' && prefs.crosshair) { e.preventDefault(); addPoint(map.getCenter()); }
+    }
+
+    function open() {
+      if (window.innerWidth < 1024 && typeof closeMobileSidebars === 'function') { try { closeMobileSidebars(); } catch (e) { } }
+      S.active = true; panel.hidden = false; fab.classList.add('on');
+      document.body.classList.add('ms-open');
+      map.getContainer().classList.add('ms-active');
+      map.closePopup();
+      if (map.doubleClickZoom) map.doubleClickZoom.disable();
+      map.on('click', onMapClick); map.on('dblclick', onDbl);
+      map.on('mousemove', onMove); map.on('mouseout', onOut);
+      map.on('move', onMapMove); map.on('zoomend', onZoomEnd);
+      document.addEventListener('keydown', onKey);
+      syncSettings(); renderTabs(); renderSaved(); updateBadge(); applyCrosshair();
+      rebuildSaved(); scheduleDraw(); updateDynamic();
+    }
+    function close() {
+      if (S.pts.length >= (MIN_PTS[S.mode] || 99)) finish();
+      S.pts = []; S.cursor = null; S.viewId = null; syncVertices(); gLive.clearLayers();
+      S.active = false; panel.hidden = true; fab.classList.remove('on');
+      document.body.classList.remove('ms-open');
+      map.getContainer().classList.remove('ms-active');
+      if (map.doubleClickZoom) map.doubleClickZoom.enable();
+      map.off('click', onMapClick); map.off('dblclick', onDbl);
+      map.off('mousemove', onMove); map.off('mouseout', onOut);
+      map.off('move', onMapMove); map.off('zoomend', onZoomEnd);
+      document.removeEventListener('keydown', onKey);
+      cross.hidden = true;
+    }
+
+    /* API publik minimal (untuk integrasi / debugging) */
+    window.WebGISMeasure = { open: open, close: close, clear: clearAll, toGeoJSON: toGeoJSON, state: S };
+    updateBadge();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+
 </script>
 </body>
 </html>
