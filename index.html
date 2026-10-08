@@ -869,19 +869,38 @@ tailwind.config = {
     }
 
   /* ============================================================== */
-  /* FIX STRUKTUR HEADER: skala z-index tunggal + hit-testing aman   */
+  /* STRUKTUR HEADER v3 (DEFINITIF)                                  */
+  /* - Header: position:fixed, z-index tertinggi, selalu bisa diklik  */
+  /* - Peta (<main>): stacking context sendiri (isolation) sehingga   */
+  /*   z-index Leaflet (400-1000) TIDAK PERNAH menutupi header        */
   /* ============================================================== */
   :root { --hdr-h: calc(56px + env(safe-area-inset-top, 0px)); }
   #app-header {
+    position: fixed !important; top: 0; left: 0; right: 0;
     height: var(--hdr-h) !important; box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
-    position: relative; z-index: 2000 !important; isolation: isolate;
-    pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    z-index: 5000 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none; user-select: none;
   }
-  #app-header button, #app-header [data-action], #app-header select, #app-header input { touch-action: manipulation; cursor: pointer; }
-  #app-header input { cursor: text; }
+  #app-header * { pointer-events: auto; }
+  #app-header button, #app-header [data-action] {
+    touch-action: manipulation; cursor: pointer; position: relative; z-index: 1;
+    -webkit-appearance: none; appearance: none; font: inherit;
+  }
+  /* ikon/teks di dalam tombol tidak boleh menangkap klik -> target selalu tombolnya */
+  #app-header button > *, #app-header [data-action] > * { pointer-events: none; }
+  #app-header input, #app-header select { cursor: text; touch-action: manipulation; }
+  #app-header button:hover, #weather-chip:hover { transform: none !important; } /* hindari "sticky hover" iOS */
+
+  main#map-stage {
+    position: absolute !important; left: 0; right: 0; bottom: 0;
+    top: var(--hdr-h); flex: none !important;
+    z-index: 0; isolation: isolate; overflow: hidden;
+  }
   #header-wind-popup {
-    position: fixed !important; z-index: 2100 !important;
+    position: fixed !important; z-index: 5100 !important;
     top: calc(var(--hdr-h) + 6px) !important; right: 12px !important; left: auto !important;
     width: min(288px, calc(100vw - 16px)) !important; margin: 0 !important;
     background: rgba(15, 23, 42, 0.97); border: 1px solid rgba(100, 116, 139, 0.7);
@@ -890,21 +909,22 @@ tailwind.config = {
   }
   #header-wind-popup > * + * { margin-top: 12px; }
   #header-wind-popup.hidden { display: none !important; }
-  #header-wind-popup select { font-size: 16px; } /* cegah auto-zoom iOS */
+  #header-wind-popup select { font-size: 16px; }
 
-  /* Lapisan lain di bawah header, modal di atas header */
+  /* Lapisan lain di bawah header; modal & toast di atas header */
   #sidebar-scrim { z-index: 1400 !important; }
   #left-sidebar, #right-sidebar { z-index: 1500 !important; top: calc(var(--hdr-h) + 8px) !important; }
-  #quick-jump-bar, #floating-toggle-left-btn, #floating-toggle-right-btn, #wind-hud { z-index: 1300 !important; }
-  #about-modal, #weather-modal, #export-password-modal { z-index: 3000 !important; }
-  #export-success-toast { z-index: 3100 !important; }
-  #search-suggestions { z-index: 2200 !important; }
-  @media (max-width: 1023.98px) {
-    #left-sidebar, #right-sidebar { top: calc(var(--hdr-h) + 8px) !important; }
+  #about-modal, #weather-modal, #export-password-modal { z-index: 8000 !important; }
+  /* TOAST: saat tersembunyi harus benar-benar "tidak ada" (ini penyebab utama header tak bisa diklik:
+     toast transparan tapi tetap menerima sentuhan & menutupi tombol header) */
+  #export-success-toast { z-index: 8100 !important; top: calc(var(--hdr-h) + 8px) !important; }
+  #export-success-toast.opacity-0, #export-success-toast[aria-hidden="true"] {
+    pointer-events: none !important; visibility: hidden !important;
   }
+  #search-suggestions { z-index: 5200 !important; }
   @media (max-width: 767.98px) {
     #header-wind-popup { left: 8px !important; right: 8px !important; width: auto !important; }
-    #export-success-toast { top: calc(var(--hdr-h) + 8px) !important; }
+    #export-success-toast { left: 8px !important; right: 8px !important; }
   }
 
   /* ============================================================== */
@@ -1144,7 +1164,8 @@ body{background:radial-gradient(1200px 600px at 10% -10%,rgba(99,102,241,.12),tr
 </head>
 <body class="h-full w-full bg-slate-950 text-slate-100 overflow-hidden font-sans antialiased relative flex flex-col">
   <div id="app-splash" role="status" aria-live="polite"><div class="splash-ring"></div><b>WebGIS Tesis Evan</b><span>Memuat peta & data spasial…</span></div>
-  <script>window.addEventListener('load',function(){var s=document.getElementById('app-splash');if(s){s.classList.add('done');setTimeout(function(){s.remove()},500)}});</script>
+  <script>(function(){function hide(){var s=document.getElementById('app-splash');if(s){s.classList.add('done');s.style.pointerEvents='none';setTimeout(function(){s&&s.remove()},500)}}
+window.addEventListener('load',hide);document.addEventListener('DOMContentLoaded',function(){setTimeout(hide,2500)});setTimeout(hide,6000);})();</script>
 
   <!-- ============================================================== -->
   <!-- 1. HEADER NAVIGASI / TOPBAR UTAMA (Z-INDEX: 50 SESUAI SPESIFIKASI) -->
@@ -1152,7 +1173,7 @@ body{background:radial-gradient(1200px 600px at 10% -10%,rgba(99,102,241,.12),tr
   <header id="app-header" class="h-14 px-4 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/50 flex items-center justify-between shadow-2xl z-50 shrink-0 select-none relative">
     <!-- Sisi Kiri: Branding & Toggle Sidebar Kiri -->
     <div id="hdr-left" class="flex items-center gap-3 min-w-0">
-      <button id="toggle-left-sidebar-btn" type="button" aria-label="Buka atau tutup panel lapisan" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-indigo-400 hover:text-white border border-slate-700/50 transition-colors shadow-sm cursor-pointer" title="Buka/Tutup Panel Lapisan">
+      <button id="toggle-left-sidebar-btn" type="button" data-action="left" aria-label="Buka atau tutup panel lapisan" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-indigo-400 hover:text-white border border-slate-700/50 transition-colors shadow-sm cursor-pointer" title="Buka/Tutup Panel Lapisan">
         <i class="fa-solid fa-bars-staggered text-sm"></i>
       </button>
 
@@ -1188,7 +1209,7 @@ body{background:radial-gradient(1200px 600px at 10% -10%,rgba(99,102,241,.12),tr
     <!-- Sisi Kanan: Widget Cuaca, Info Riset, Status PostGIS, & Toggle Atribut (Terpisah Horizontal) -->
     <div id="hdr-right" class="flex items-center gap-2.5 shrink-0">
       <!-- Widget Cuaca Real-Time Sampit (Header Bar Interaktif) -->
-      <div id="weather-chip" data-action="weather" role="button" tabindex="0" aria-label="Prakiraan cuaca 5 hari" class="flex items-center gap-2.5 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-indigo-500/50 rounded-xl px-3 py-1.5 text-xs cursor-pointer transition-all shadow-md group" title="Prakiraan Cuaca Terkini Sampit • Klik untuk Prakiraan 5 Hari">
+      <button id="weather-chip" type="button" data-action="weather" aria-label="Prakiraan cuaca 5 hari" class="flex items-center gap-2.5 text-left bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/60 hover:border-indigo-500/50 rounded-xl px-3 py-1.5 text-xs cursor-pointer transition-all shadow-md group" title="Prakiraan Cuaca Terkini Sampit • Klik untuk Prakiraan 5 Hari">
         <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform">
           <span id="weather-icon">⛅</span>
         </div>
@@ -1206,7 +1227,7 @@ body{background:radial-gradient(1200px 600px at 10% -10%,rgba(99,102,241,.12),tr
           <span class="bg-indigo-500/20 px-1.5 py-0.5 rounded border border-indigo-500/30">5 Hari</span>
           <i class="fa-solid fa-chevron-right text-[8px] group-hover:translate-x-0.5 transition-transform"></i>
         </div>
-      </div>
+      </button>
 
       <!-- Widget Kontrol Simulasi Angin Header (Akses Cepat & Pop-up) -->
       <div class="relative" id="header-wind-widget-container">
@@ -1233,13 +1254,13 @@ body{background:radial-gradient(1200px 600px at 10% -10%,rgba(99,102,241,.12),tr
       </button>
 
       <!-- Tombol Informasi & Metodologi Riset Tesis (Terpisah Horizontal) -->
-      <button id="btn-open-about" type="button" aria-label="Informasi riset tesis" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/25 cursor-pointer">
+      <button id="btn-open-about" type="button" data-action="about" aria-label="Informasi riset tesis" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/25 cursor-pointer">
         <i class="fa-solid fa-circle-info text-xs"></i>
         <span class="hidden sm:inline">Riset Tesis</span>
       </button>
 
       <!-- Tombol Toggle Sidebar Kanan (Atribut & Profil) -->
-      <button id="toggle-right-sidebar-btn" type="button" aria-label="Buka atau tutup panel atribut" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-indigo-400 hover:text-white border border-slate-700/50 transition-colors shadow-sm cursor-pointer" title="Buka/Tutup Panel Atribut & Statistik">
+      <button id="toggle-right-sidebar-btn" type="button" data-action="right" aria-label="Buka atau tutup panel atribut" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-indigo-400 hover:text-white border border-slate-700/50 transition-colors shadow-sm cursor-pointer" title="Buka/Tutup Panel Atribut & Statistik">
         <i class="fa-solid fa-chart-pie text-sm"></i>
       </button>
     </div>
@@ -1284,10 +1305,55 @@ body{background:radial-gradient(1200px 600px at 10% -10%,rgba(99,102,241,.12),tr
           </div>
         </div>
 
+
+  <script>
+  /* ===== HEADER CONTROLS v3 =====
+     Berdiri sendiri: dipasang langsung di <document> (capture), tidak bergantung
+     pada initMap()/dataset/DOMContentLoaded. Satu error di bagian lain tidak
+     lagi mematikan tombol header. */
+  (function () {
+    var pop = function () { return document.getElementById('header-wind-popup'); };
+    var windBtn = function () { return document.getElementById('header-wind-btn'); };
+    function setPop(open) {
+      var p = pop(); if (!p) return;
+      p.classList.toggle('hidden', !open);
+      var b = windBtn(); if (b) b.setAttribute('aria-expanded', String(open));
+    }
+    function call(name) {
+      try {
+        var fn = window[name];
+        if (typeof fn === 'function') return fn.apply(window, [].slice.call(arguments, 1));
+        console.warn('[header] fungsi belum tersedia:', name);
+      } catch (err) { console.error('[header] ' + name + ' gagal:', err); }
+    }
+    function onActivate(e) {
+      var t = e.target && e.target.closest ? e.target.closest('#app-header [data-action]') : null;
+      if (!t) return;
+      var a = t.getAttribute('data-action');
+      if (a === 'wind') { var p = pop(); setPop(!!p && p.classList.contains('hidden')); return; }
+      setPop(false);
+      if (a === 'weather') call('openWeatherForecastModal');
+      else if (a === 'reset') call('resetWebGISState');
+      else if (a === 'about') call('openAboutModal');
+      else if (a === 'left') call('toggleLeftSidebar');
+      else if (a === 'right') call('toggleRightSidebar');
+    }
+    document.addEventListener('click', onActivate, true);
+    // tutup popup angin: klik di luar / Escape
+    document.addEventListener('click', function (e) {
+      var p = pop(); if (!p || p.classList.contains('hidden')) return;
+      if (p.contains(e.target) || (windBtn() && windBtn().contains(e.target))) return;
+      setPop(false);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setPop(false); });
+    window.__headerReady = true;
+  })();
+  </script>
+
   <!-- ============================================================== -->
   <!-- 2. CONTAINER PETA FULLSCREEN & FLOATING CONTROLS               -->
   <!-- ============================================================== -->
-  <main class="flex-1 w-full relative overflow-hidden bg-slate-950">
+  <main id="map-stage" class="w-full bg-slate-950">
     <!-- Wadah Leaflet Map -->
     <div id="map"></div>
 
@@ -4141,6 +4207,7 @@ body{background:radial-gradient(1200px 600px at 10% -10%,rgba(99,102,241,.12),tr
     function resetWebGISState() {
       // 1. Tutup seluruh popup peta yang sedang terbuka dan bersihkan seleksi
       if (map) map.closePopup();
+      if (!map) return;
       resetAllPolygonLayers();
       clearFeatureSelection();
       if (typeof clearVillageSearch === 'function') {
@@ -8005,16 +8072,19 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
     // DOM READY STARTUP
     // ============================================
     window.addEventListener('DOMContentLoaded', () => {
-      initMap();
-      loadAllGeospatialDatasets();
-      initWindSimulation();
-      toggleWindSimulation(false);
-      fetchKotimWeather();
-
-      document.getElementById('toggle-left-sidebar-btn')?.addEventListener('click', toggleLeftSidebar);
-      document.getElementById('toggle-right-sidebar-btn')?.addEventListener('click', toggleRightSidebar);
-      
-      document.getElementById('btn-open-about')?.addEventListener('click', openAboutModal);
+      // Setiap langkah startup diisolasi: satu kegagalan tidak menghentikan yang lain
+      const step = (name, fn) => {
+        try {
+          const r = fn();
+          if (r && typeof r.catch === 'function') r.catch(err => console.error('[startup] ' + name + ':', err));
+        } catch (err) { console.error('[startup] ' + name + ':', err); }
+      };
+      step('initMap', () => initMap());
+      step('loadAllGeospatialDatasets', () => loadAllGeospatialDatasets());
+      step('initWindSimulation', () => initWindSimulation());
+      step('toggleWindSimulation', () => toggleWindSimulation(false));
+      step('fetchKotimWeather', () => fetchKotimWeather());
+      // Tombol header (sidebar kiri/kanan, Riset Tesis) ditangani header-controls v3 (data-action)
 
       // Keyboard Listener untuk Proteksi Password Ekspor (Enter untuk submit, Escape untuk batal)
       document.getElementById('export-password-input')?.addEventListener('keydown', (e) => {
@@ -8385,49 +8455,7 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
 })();
 </script>
 
-<script>
-/* ===== assets/js/modules/header-controls.js ===== */
-/* FIX HEADER: satu pintu event (delegasi) + popup angin yang benar */
-(function () {
-  function init() {
-    var hdr = document.getElementById('app-header');
-    var pop = document.getElementById('header-wind-popup');
-    var windBtn = document.getElementById('header-wind-btn');
-    if (!hdr) return;
 
-    function setPop(open) {
-      if (!pop) return;
-      pop.classList.toggle('hidden', !open);
-      if (windBtn) windBtn.setAttribute('aria-expanded', String(open));
-    }
-    function safe(fn) { try { if (typeof fn === 'function') fn(); } catch (e) { console.error('[header]', e); } }
-
-    hdr.addEventListener('click', function (e) {
-      var el = e.target.closest('[data-action]');
-      if (!el || !hdr.contains(el)) return;
-      var a = el.getAttribute('data-action');
-      if (a === 'wind') { setPop(pop.classList.contains('hidden')); return; }
-      setPop(false);
-      if (a === 'weather') safe(window.openWeatherForecastModal);
-      else if (a === 'reset') safe(window.resetWebGISState);
-    });
-    // keyboard untuk chip cuaca (role=button)
-    hdr.addEventListener('keydown', function (e) {
-      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-action="weather"]')) {
-        e.preventDefault(); setPop(false); safe(window.openWeatherForecastModal);
-      }
-    });
-    // tutup popup: klik di luar / Escape / saat peta disentuh
-    document.addEventListener('click', function (e) {
-      if (!pop || pop.classList.contains('hidden')) return;
-      if (pop.contains(e.target) || (windBtn && windBtn.contains(e.target))) return;
-      setPop(false);
-    });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setPop(false); });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
-})();
-</script>
 <script>
 /* ===== assets/js/modules/measure-math.js ===== */
 /* ===== WebGIS Measure — modul matematika geodesi (WGS84) ===== */
