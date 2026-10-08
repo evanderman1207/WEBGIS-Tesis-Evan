@@ -2,13 +2,15 @@
 <html lang="id" class="h-full bg-slate-950 text-slate-100">
 <head>
   <meta charset="utf-8" />
+  <meta name="theme-color" content="#0b1020" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🗺️</text></svg>" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>WebGIS Analisis Tesis Evan – Kotawaringin Timur 2025</title>
-  <meta name="description" content="Sistem Informasi Geospasial Analisis Spasial Klaster Kemiskinan dan Risiko Bencana Kabupaten Kotawaringin Timur – Evan (2025)." />
+  <meta name="description" content="Sistem Informasi Geospasial Analisis Spasial Klaster Kemiskinan Kotawaringin Timur – Evan (2025)." />
   <meta name="author" content="Evan" />
   <meta property="og:title" content="WebGIS Analisis Tesis Evan – Kotawaringin Timur 2025" />
-  <meta property="og:description" content="WebGIS Analisis Spasial Klaster Kemiskinan dan Risiko Bencana Kabupaten Kotawaringin Timur • Peneliti: Evan (2025)" />
+  <meta property="og:description" content="WebGIS Analisis Spasial Klaster Kemiskinan Kabupaten Kotawaringin Timur • Peneliti: Evan (2025)" />
   <meta property="og:type" content="website" />
 
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
@@ -29,7 +31,8 @@
   <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
+/* ===== assets/js/tailwind.config.js ===== */
+tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
@@ -50,7 +53,8 @@
         }
       }
     }
-  </script>
+  
+</script>
 
   <!-- Leaflet JS CDN -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -73,6 +77,7 @@
   <script src="data/TourismandCulturalHeritagePariwisataKotawaringinTimur_4.js"></script>
 
   <style>
+/* ===== BASE ===== */
     /* Styling Dasar & Cyber-Dark Glassmorphism */
     html, body {
       height: 100%;
@@ -1058,9 +1063,88 @@
     .ms-actions button { height: 42px; }
     .ms-hint { padding-bottom: 8px; }
   }
+
+/* ==========================================================================
+   THEME PRO — lapisan desain modern (override aman, tidak mengubah logika)
+   Urutan: design tokens → base → header → sidebar → kontrol → peta → modal
+   ========================================================================== */
+:root{
+  --bg:#0b1020; --surface:rgba(15,23,42,.82); --surface-2:rgba(30,41,59,.55);
+  --line:rgba(148,163,184,.16); --line-strong:rgba(148,163,184,.28);
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#6366f1; --accent-2:#22d3ee;
+  --r-sm:10px; --r-md:14px; --r-lg:18px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.35);
+  --shadow-lg:0 20px 45px -12px rgba(2,6,23,.65),0 0 0 1px rgba(255,255,255,.03) inset;
+  --ease:cubic-bezier(.22,.8,.3,1);
+}
+html{color-scheme:dark;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:radial-gradient(1200px 600px at 10% -10%,rgba(99,102,241,.12),transparent 60%),var(--bg)!important}
+::selection{background:rgba(99,102,241,.45);color:#fff}
+:focus-visible{outline:2px solid var(--accent-2)!important;outline-offset:2px;border-radius:8px}
+::-webkit-scrollbar-thumb{background:rgba(148,163,184,.28)}::-webkit-scrollbar-thumb:hover{background:rgba(129,140,248,.7)}
+
+/* ---------- Splash ---------- */
+#app-splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;background:var(--bg);transition:opacity .45s var(--ease)}
+#app-splash.done{opacity:0;pointer-events:none}
+#app-splash b{font-size:15px;letter-spacing:.01em}#app-splash span{font-size:12px;color:var(--muted)}
+.splash-ring{width:38px;height:38px;border-radius:50%;border:3px solid rgba(99,102,241,.2);border-top-color:var(--accent-2);animation:spin .8s linear infinite;margin-bottom:.4rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Header ---------- */
+#app-header{background:linear-gradient(180deg,rgba(15,23,42,.94),rgba(15,23,42,.8))!important;border-bottom:1px solid var(--line)!important;box-shadow:0 8px 30px -10px rgba(0,0,0,.6)!important;position:relative}
+#app-header::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent-2),transparent);opacity:.55}
+#hdr-logo{background:linear-gradient(135deg,rgba(99,102,241,.45),rgba(34,211,238,.25))!important;border-color:rgba(129,140,248,.55)!important;box-shadow:0 0 18px -4px rgba(99,102,241,.7)}
+#hdr-title{letter-spacing:-.01em}
+#app-header button,#weather-chip{transition:transform .18s var(--ease),background .18s,border-color .18s,box-shadow .18s}
+#app-header button:hover,#weather-chip:hover{transform:translateY(-1px)}
+#app-header button:active{transform:translateY(0) scale(.97)}
+#btn-open-about{background:linear-gradient(135deg,#6366f1,#4f46e5)!important;box-shadow:0 6px 16px -6px rgba(99,102,241,.8)}
+#search-input{transition:border-color .2s,box-shadow .2s,background .2s}
+#search-input:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(99,102,241,.22);outline:none!important}
+#search-suggestions{border-radius:var(--r-md)!important;box-shadow:var(--shadow-lg)!important;overflow:hidden}
+
+/* ---------- Sidebar (panel kaca) ---------- */
+.sidebar-pane{background:var(--surface)!important;backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border:1px solid var(--line)!important;border-radius:var(--r-lg)!important;box-shadow:var(--shadow-lg)!important}
+.sidebar-pane>div:first-child{background:rgba(2,6,23,.45)!important;border-bottom:1px solid var(--line)!important}
+.sidebar-pane [id^="tab-btn-"]{transition:background .18s,color .18s,border-color .18s}
+.sidebar-pane [id^="tab-btn-"]:hover{background:rgba(99,102,241,.12)}
+.sidebar-pane [id^="content-tab-"]{animation:tabIn .28s var(--ease)}
+@keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Kartu & kontrol ---------- */
+.sidebar-pane [class*="rounded-xl"][class*="border"]{transition:border-color .2s,background .2s,transform .2s var(--ease),box-shadow .2s}
+.sidebar-pane [class*="rounded-xl"][class*="border"]:hover{border-color:var(--line-strong)}
+[id^="bm-"][onclick]:hover{transform:translateY(-2px);box-shadow:0 12px 24px -12px rgba(0,0,0,.7)}
+.sidebar-pane select,.sidebar-pane input[type="text"],.sidebar-pane input[type="search"],.sidebar-pane input:not([type]){border-radius:var(--r-sm)!important;transition:border-color .2s,box-shadow .2s}
+.sidebar-pane select:focus,.sidebar-pane input:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(99,102,241,.2);outline:none!important}
+.sidebar-pane button{transition:transform .15s var(--ease),filter .15s,background .18s}
+.sidebar-pane button:active{transform:scale(.97)}
+.gis-switch{width:36px;height:20px;border-radius:999px}.gis-switch::after{top:2px;left:2px;width:16px;height:16px;box-shadow:var(--shadow-sm)}
+.gis-switch:checked{background:linear-gradient(135deg,#6366f1,#22d3ee)}.gis-switch:checked::after{transform:translateX(16px)}
+.gis-slider{height:5px}.gis-slider::-webkit-slider-thumb{width:14px;height:14px;box-shadow:0 0 0 4px rgba(129,140,248,.2)}
+.font-mono{font-variant-numeric:tabular-nums}
+
+/* ---------- Peta ---------- */
+.leaflet-control-zoom,.leaflet-bar{border-radius:var(--r-md)!important;border:1px solid var(--line)!important;box-shadow:var(--shadow-lg)!important;overflow:hidden}
+.leaflet-bar a{background:var(--surface)!important;color:var(--text)!important;border-bottom-color:var(--line)!important;backdrop-filter:blur(12px)}
+.leaflet-bar a:hover{background:rgba(99,102,241,.35)!important}
+.leaflet-popup-content-wrapper{border-radius:var(--r-md)!important;box-shadow:var(--shadow-lg)!important}
+.leaflet-tooltip{border-radius:8px!important;box-shadow:var(--shadow-lg)!important}
+.leaflet-container{font-family:inherit!important}
+#quick-jump-bar,#wind-hud{background:var(--surface)!important;backdrop-filter:blur(16px);border:1px solid var(--line)!important;border-radius:999px;box-shadow:var(--shadow-lg)!important}
+#wind-hud{border-radius:var(--r-lg)}
+
+/* ---------- Modal & toast ---------- */
+#about-modal>div,#weather-modal>div,#export-password-modal>div{border-radius:22px!important;border:1px solid var(--line-strong)!important;box-shadow:0 30px 80px -20px rgba(0,0,0,.85)!important;animation:modalIn .3s var(--ease)}
+@keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+#export-success-toast{border-radius:var(--r-md)!important;box-shadow:var(--shadow-lg)!important}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body class="h-full w-full bg-slate-950 text-slate-100 overflow-hidden font-sans antialiased relative flex flex-col">
+  <div id="app-splash" role="status" aria-live="polite"><div class="splash-ring"></div><b>WebGIS Tesis Evan</b><span>Memuat peta & data spasial…</span></div>
+  <script>window.addEventListener('load',function(){var s=document.getElementById('app-splash');if(s){s.classList.add('done');setTimeout(function(){s.remove()},500)}});</script>
 
   <!-- ============================================================== -->
   <!-- 1. HEADER NAVIGASI / TOPBAR UTAMA (Z-INDEX: 50 SESUAI SPESIFIKASI) -->
@@ -1082,7 +1166,7 @@
             <span class="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hidden sm:inline">2025</span>
           </h1>
           <p id="hdr-subtitle" class="text-[10px] text-slate-400 truncate max-w-[200px] sm:max-w-xs">
-            Analisis Spasial Klaster Kemiskinan & Risiko Bencana
+            Analisis Spasial Klaster Kemiskinan
           </p>
         </div>
       </div>
@@ -2016,53 +2100,181 @@
     </div>
   </aside>
 
-  <!-- MODAL INFORMASI & METODOLOGI RISET -->
-  <div id="about-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-700/50 max-w-lg w-full rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-white/10 pb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center">
-            <i class="fa-solid fa-book-open text-sm"></i>
-          </div>
-          <h3 class="text-sm font-bold text-white">Informasi & Metodologi Tesis</h3>
-        </div>
-        <button onclick="closeAboutModal()" class="text-slate-400 hover:text-white p-1">
-          <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
-      </div>
+ <!-- MODAL INFORMASI & METODOLOGI RISET -->
+<div id="about-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 hidden">
+  <div class="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-900 shadow-2xl shadow-black/60">
 
-      <div class="text-xs text-slate-300 space-y-3 leading-relaxed">
-        <div class="p-3.5 bg-indigo-950/40 rounded-xl border border-indigo-500/40 space-y-1.5">
-          <div class="text-[10px] font-bold text-indigo-300 uppercase tracking-wider">Informasi Riset Tesis:</div>
-          <div class="flex justify-between"><span>Peneliti:</span><span class="font-bold text-white">Evan (2025)</span></div>
-          <div class="flex justify-between"><span>Lokasi Studi:</span><span>Kabupaten Kotawaringin Timur</span></div>
-          <div class="flex justify-between"><span>Metodologi:</span><span class="font-mono text-indigo-300">Cluster Analysis</span></div>
-          <div class="flex justify-between"><span>Sumber Data:</span><span>Hasil analisis peneliti tahun 2025</span></div>
+    <!-- Header (sticky) -->
+    <div class="flex items-center justify-between gap-3 border-b border-white/10 bg-slate-900/95 px-5 py-4 backdrop-blur">
+      <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-900/50">
+          <i class="fa-solid fa-book-open text-sm"></i>
         </div>
-
-        <div class="p-3 bg-slate-950/60 rounded-xl border border-white/10 space-y-1">
-          <div class="font-bold text-white text-xs">Atribusi Akademik & Kontak:</div>
-          <div class="text-indigo-300">MPWK UGM 2025, NIM 23/513022/PTK/15068</div>
-          <div class="text-[11px] pt-1">Email: dermanevan@gmail.com • evan1999@mail.ugm.ac.id</div>
-        </div>
-
-        <div class="space-y-1">
-          <div class="font-bold text-white text-xs">Tipologi 3 Klaster Kemiskinan:</div>
-          <ul class="list-disc pl-4 space-y-1 text-slate-300 text-[11px]">
-            <li><strong>Kawasan Kumuh (Urban Slum):</strong> Sanitasi rendah, kepadatan tinggi perkotaan Sampit.</li>
-            <li><strong>Pedesaan (High Dependency Ratio):</strong> Tingkat ketergantungan ekonomi tinggi di wilayah agraris.</li>
-            <li><strong>Wilayah Terpencil (Limited Asset):</strong> Defisit kepemilikan aset & jarak jauh ke faskes/sekolah.</li>
-          </ul>
+        <div>
+          <h3 class="text-sm font-bold leading-tight text-white">Informasi &amp; Metodologi Tesis</h3>
+          <p class="text-[11px] text-slate-400">Dinamika spasial kemiskinan · Kotawaringin Timur</p>
         </div>
       </div>
-
-      <div class="pt-2 border-t border-white/10 flex justify-end">
-        <button onclick="closeAboutModal()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold">
-          Tutup
-        </button>
-      </div>
+      <button onclick="closeAboutModal()" aria-label="Tutup"
+        class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
     </div>
+
+    <!-- Body (scrollable) -->
+    <div class="flex-1 space-y-6 overflow-y-auto px-5 py-5 text-xs leading-relaxed text-slate-300">
+
+      <!-- Brief -->
+      <section class="space-y-3">
+        <div class="flex items-center gap-2">
+          <span class="h-4 w-1 rounded-full bg-indigo-500"></span>
+          <h4 class="text-[11px] font-bold uppercase tracking-[0.14em] text-white">Ringkasan Penelitian</h4>
+        </div>
+
+        <p class="text-justify text-[12px] leading-[1.7] text-slate-200">
+          Penelitian ini mengkaji dinamika spasial kemiskinan melalui dua kerangka teori, yaitu
+          <span class="font-semibold text-indigo-300">Spatial Poverty Trap</span> / Jebakan Kemiskinan Spasial (Jalan &amp; Ravallion, 1997)
+          dan <span class="font-semibold text-indigo-300">Natural Resource Curse Theory</span> / Kutukan Sumber Daya Alam (Richard M. Auty, 1993).
+          Pendekatan analisis spasial dan statistik digunakan untuk menelaah keterkaitan antara faktor geografis dan sebaran kemiskinan.
+          Temuan penelitian memetakan tiga klaster kemiskinan yang berbeda, sekaligus menunjukkan bahwa melimpahnya sumber daya alam
+          tidak otomatis menghasilkan kesejahteraan ekonomi apabila tidak diiringi pengelolaan yang berkelanjutan dan berbasis masyarakat.
+        </p>
+
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-[10.5px] font-medium text-indigo-200">
+            <i class="fa-solid fa-map-location-dot text-[10px]"></i> Spatial Poverty Trap · 1997
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-violet-400/30 bg-violet-500/10 px-3 py-1 text-[10.5px] font-medium text-violet-200">
+            <i class="fa-solid fa-gem text-[10px]"></i> Natural Resource Curse · 1993
+          </span>
+        </div>
+      </section>
+
+      <!-- Tipologi Klaster -->
+      <section class="space-y-3">
+        <div class="flex items-center gap-2">
+          <span class="h-4 w-1 rounded-full bg-indigo-500"></span>
+          <h4 class="text-[11px] font-bold uppercase tracking-[0.14em] text-white">Tipologi 3 Klaster Kemiskinan</h4>
+        </div>
+
+        <div class="grid gap-2.5">
+          <div class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 transition hover:border-rose-400/40 hover:bg-rose-500/5">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/15 text-rose-300">
+              <i class="fa-solid fa-city text-sm"></i>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-x-2">
+                <span class="text-[12px] font-semibold text-white">Kawasan Kumuh</span>
+                <span class="text-[10.5px] text-rose-300/80">Urban Slum</span>
+              </div>
+              <p class="mt-0.5 text-[11px] text-slate-400">Sanitasi rendah, kepadatan tinggi perkotaan Sampit.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 transition hover:border-amber-400/40 hover:bg-amber-500/5">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-300">
+              <i class="fa-solid fa-wheat-awn text-sm"></i>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-x-2">
+                <span class="text-[12px] font-semibold text-white">Pedesaan</span>
+                <span class="text-[10.5px] text-amber-300/80">High Dependency Ratio</span>
+              </div>
+              <p class="mt-0.5 text-[11px] text-slate-400">Tingkat ketergantungan ekonomi tinggi di wilayah agraris.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 transition hover:border-emerald-400/40 hover:bg-emerald-500/5">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-300">
+              <i class="fa-solid fa-mountain-sun text-sm"></i>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-x-2">
+                <span class="text-[12px] font-semibold text-white">Wilayah Terpencil</span>
+                <span class="text-[10.5px] text-emerald-300/80">Limited Asset</span>
+              </div>
+              <p class="mt-0.5 text-[11px] text-slate-400">Defisit kepemilikan aset &amp; jarak jauh ke faskes/sekolah.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Detail Penelitian -->
+      <section class="space-y-3">
+        <div class="flex items-center gap-2">
+          <span class="h-4 w-1 rounded-full bg-indigo-500"></span>
+          <h4 class="text-[11px] font-bold uppercase tracking-[0.14em] text-white">Detail Penelitian</h4>
+        </div>
+
+        <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5 sm:col-span-2">
+            <div class="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <i class="fa-solid fa-location-dot text-indigo-400"></i> Lokasi Studi
+            </div>
+            <div class="text-[12px] font-medium text-white">Kabupaten Kotawaringin Timur, Kalimantan Tengah</div>
+          </div>
+
+          <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
+            <div class="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <i class="fa-solid fa-diagram-project text-indigo-400"></i> Metodologi
+            </div>
+            <span class="inline-block rounded-md border border-indigo-400/30 bg-indigo-500/10 px-2 py-0.5 font-mono text-[11px] text-indigo-300">Cluster Analysis</span>
+          </div>
+
+          <div class="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
+            <div class="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <i class="fa-solid fa-database text-indigo-400"></i> Sumber Data
+            </div>
+            <div class="text-[12px] font-medium text-white">Hasil analisis peneliti tahun 2025</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Peneliti & Kontak -->
+      <section class="overflow-hidden rounded-2xl border border-indigo-500/25 bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-900">
+        <div class="flex items-center gap-3 border-b border-white/10 p-4">
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-indigo-500/20 text-sm font-bold text-indigo-200 ring-1 ring-indigo-400/30">E</div>
+          <div class="min-w-0">
+            <div class="text-[13px] font-semibold text-white">Evan <span class="font-normal text-slate-400">(2025)</span></div>
+            <div class="text-[11px] text-indigo-300">MPWK UGM 2025</div>
+            <div class="font-mono text-[10.5px] text-slate-400">NIM 23/513022/PTK/15068</div>
+          </div>
+        </div>
+
+        <div class="space-y-3 p-4">
+          <div>
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Pembimbing Tesis</div>
+            <div class="mt-0.5 text-[12px] font-medium text-slate-100">Doddy Aditya Iskandar, S.T., MCP, Ph.D</div>
+          </div>
+
+          <div class="flex flex-col gap-2 border-t border-white/10 pt-3 sm:flex-row">
+            <a href="mailto:dermanevan@gmail.com"
+              class="flex flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] text-slate-300 transition hover:border-indigo-400/40 hover:text-indigo-200">
+              <i class="fa-solid fa-envelope text-indigo-400"></i>
+              <span class="truncate">dermanevan@gmail.com</span>
+            </a>
+            <a href="mailto:evan1999@mail.ugm.ac.id"
+              class="flex flex-1 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] text-slate-300 transition hover:border-indigo-400/40 hover:text-indigo-200">
+              <i class="fa-solid fa-graduation-cap text-indigo-400"></i>
+              <span class="truncate">evan1999@mail.ugm.ac.id</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Footer (sticky) -->
+    <div class="flex items-center justify-between gap-3 border-t border-white/10 bg-slate-900/95 px-5 py-3 backdrop-blur">
+      <span class="text-[10.5px] text-slate-500">MPWK UGM · 2025</span>
+      <button onclick="closeAboutModal()"
+        class="rounded-xl bg-indigo-600 px-5 py-1.5 text-xs font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:bg-indigo-500">
+        Tutup
+      </button>
+    </div>
+
   </div>
+</div>
 
   <!-- MODAL PRAKIRAAN CUACA 5 HARI KEDEPAN (DARK MODE GLASSMORPHISM) -->
   <div id="weather-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden" onclick="handleWeatherBackdropClick(event)">
@@ -2208,6 +2420,7 @@
   <!-- 5. LOGIKA UTAMA JAVASCRIPT: OPENLAYERS/LEAFLET, EVENT, CHART.JS -->
   <!-- ============================================================== -->
   <script>
+/* ===== assets/js/app.js ===== */
     // ============================================
     // STATE GLOBAL & VARIABEL SISTEM
     // ============================================
@@ -5149,7 +5362,7 @@
             <div class="p-3 bg-slate-950/40 rounded-xl border border-white/10">
               <div class="text-slate-400 text-[10px]">Estimasi Populasi</div>
               <div class="text-sm font-bold text-sky-400 font-mono mt-1">${populasi.toLocaleString('id-ID')} jiwa</div>
-              <div class="text-[10px] text-slate-500 mt-0.5">Estimasi Ilustratif (bukan data BPS)</div>
+              <div class="text-[10px] text-slate-500 mt-0.5">Estimasi Jumlah Penduduk</div>
             </div>
 
             <div class="p-3 bg-slate-950/40 rounded-xl border border-white/10">
@@ -7905,9 +8118,11 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
         }
       });
     });
-  </script>
+  
+</script>
 
 <script>
+/* ===== assets/js/modules/turf-buffer.js ===== */
 /* PATCH: Analisis Buffer client-side (Turf.js) menggantikan /api/spatial/buffer */
 (function () {
   const KEY = {
@@ -7973,6 +8188,7 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
 </script>
 
 <script>
+/* ===== assets/js/modules/performance.js ===== */
 /* PATCH PERFORMA: memoization & jeda animasi */
 (function () {
   // Cache metrik spasial per desa (jarak faskes/sungai/jamban) - hitung sekali saja
@@ -8012,6 +8228,7 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
 </script>
 
 <script>
+/* ===== assets/js/modules/research-dashboard.js ===== */
 /* DASHBOARD RISET: klaster kemiskinan x aksesibilitas (dihitung dari dataset) */
 (function () {
   const CL = { terpencil: { n: 'Terpencil', c: '#ef4444' }, pedesaan: { n: 'Pedesaan', c: '#f59e0b' }, kumuh: { n: 'Kumuh Perkotaan', c: '#6366f1' } };
@@ -8169,6 +8386,7 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
 </script>
 
 <script>
+/* ===== assets/js/modules/header-controls.js ===== */
 /* FIX HEADER: satu pintu event (delegasi) + popup angin yang benar */
 (function () {
   function init() {
@@ -8211,6 +8429,7 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
 })();
 </script>
 <script>
+/* ===== assets/js/modules/measure-math.js ===== */
 /* ===== WebGIS Measure — modul matematika geodesi (WGS84) ===== */
 (function (root) {
   'use strict';
@@ -8374,9 +8593,9 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
     toUTM: toUTM, dms: dms, compass: compass, norm360: norm360
   };
 })(typeof window !== 'undefined' ? window : globalThis);
-
 </script>
 <script>
+/* ===== assets/js/modules/measure-ui.js ===== */
 /* ===== WebGIS Measure — antarmuka & interaksi ===== */
 (function () {
   'use strict';
@@ -9078,7 +9297,6 @@ ORDER BY ST_Distance(bz.geom::geography, k.geom::geography) ASC;
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
-
 </script>
 </body>
 </html>
