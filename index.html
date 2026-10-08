@@ -897,7 +897,8 @@ tailwind.config = {
   #left-sidebar, #right-sidebar { z-index: 1500 !important; top: calc(var(--hdr-h) + 8px) !important; }
   #quick-jump-bar, #floating-toggle-left-btn, #floating-toggle-right-btn, #wind-hud { z-index: 1300 !important; }
   #about-modal, #weather-modal, #export-password-modal { z-index: 3000 !important; }
-  #export-success-toast { z-index: 3100 !important; }
+  /* FIX MOBILE: toast tak terlihat (opacity 0) tidak boleh menangkap ketukan di atas header/peta */
+  #export-success-toast { z-index: 3100 !important; pointer-events: none !important; }
   #search-suggestions { z-index: 2200 !important; }
   @media (max-width: 1023.98px) {
     #left-sidebar, #right-sidebar { top: calc(var(--hdr-h) + 8px) !important; }
@@ -1139,78 +1140,12 @@ body{background:radial-gradient(1200px 600px at 10% -10%,rgba(99,102,241,.12),tr
 @keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
 #export-success-toast{border-radius:var(--r-md)!important;box-shadow:var(--shadow-lg)!important}
 
-
-/* ==========================================================================
-   FIX SENTUH MOBILE — hanya perilaku interaksi, tampilan visual tidak diubah
-   ========================================================================== */
-/* Hilangkan jeda 300ms & double-tap-zoom yang "memakan" ketukan pada semua kontrol */
-button, a, select, label, summary, [onclick], [role="button"], [data-action], input[type="checkbox"], input[type="radio"], input[type="range"] {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: rgba(129,140,248,.25);
-}
-/* iOS Safari hanya mengirim 'click' ke elemen non-interaktif bila punya cursor:pointer */
-#sidebar-scrim, [onclick]:not(button):not(a):not(select):not(input) { cursor: pointer; }
-#sidebar-scrim { touch-action: manipulation; }
-/* Splash tidak boleh menahan ketukan setelah selesai */
-#app-splash.done { pointer-events: none !important; }
-
-@media (max-width: 1023.98px) {
-  /* Panel yang bergulir: scroll halus, tidak "bocor" ke peta di belakangnya */
-  #left-sidebar .overflow-y-auto, #right-sidebar .overflow-y-auto,
-  #left-sidebar [class*="overflow-y"], #right-sidebar [class*="overflow-y"] {
-    -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
-  }
-  #left-sidebar .overflow-x-auto, #right-sidebar .overflow-x-auto { overscroll-behavior-x: contain; }
-
-  /* Skala peta hanya hiasan: jangan mencuri ketukan dari peta di bawahnya */
-  .leaflet-control-scale, .gis-modern-scale-control, .gis-scale-glass-card { pointer-events: none !important; }
-
-  /* Perluas area ketuk tombol kecil TANPA mengubah ukuran visualnya */
-  #app-header button, #weather-chip,
-  #left-sidebar button[onclick="toggleLeftSidebar()"],
-  #right-sidebar button[onclick="toggleRightSidebar()"],
-  .sidebar-pane [id^="tab-btn-"], .ms-head-btns button, .ms-item > button, .ms-cp {
-    position: relative;
-  }
-  #app-header button::before, #weather-chip::before,
-  #left-sidebar button[onclick="toggleLeftSidebar()"]::before,
-  #right-sidebar button[onclick="toggleRightSidebar()"]::before,
-  .sidebar-pane [id^="tab-btn-"]::before, .ms-head-btns button::before, .ms-item > button::before, .ms-cp::before {
-    content: ""; position: absolute; inset: -8px -4px; z-index: 1; background: transparent;
-  }
-  /* Ikon/teks di dalam tombol tidak menjadi target ketuk terpisah */
-  .sidebar-pane button > i, .sidebar-pane button > span, #app-header button > i, #app-header button > span { pointer-events: none; }
-}
-
-@media (max-width: 767.98px) {
-  /* Bar Lompat Wilayah & tombol mengambang: pastikan benar-benar di atas peta & menerima ketukan */
-  #quick-jump-bar, #floating-toggle-left-btn, #floating-toggle-right-btn, #ms-fab {
-    pointer-events: auto !important; touch-action: manipulation;
-  }
-  #quick-jump-bar select { min-height: 32px; touch-action: manipulation; pointer-events: auto; }
-  /* Panel alat ukur: tombol aksi cukup besar untuk jari */
-  .ms-tabs button { min-height: 44px; }
-  .ms-head-btns button { width: 34px; height: 34px; }
-}
-
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body class="h-full w-full bg-slate-950 text-slate-100 overflow-hidden font-sans antialiased relative flex flex-col">
   <div id="app-splash" role="status" aria-live="polite"><div class="splash-ring"></div><b>WebGIS Tesis Evan</b><span>Memuat peta & data spasial…</span></div>
-  <script>
-  (function(){
-    var gone=false;
-    function hideSplash(){
-      if(gone)return; gone=true;
-      var s=document.getElementById('app-splash');
-      if(s){s.style.pointerEvents='none';s.classList.add('done');setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},500)}
-    }
-    window.addEventListener('load',hideSplash);
-    document.addEventListener('DOMContentLoaded',function(){setTimeout(hideSplash,1200)});
-    setTimeout(hideSplash,4000); /* jaring pengaman: jangan pernah menahan layar lebih dari 4 detik */
-  })();
-</script>
+  <script>window.addEventListener('load',function(){var s=document.getElementById('app-splash');if(s){s.classList.add('done');setTimeout(function(){s.remove()},500)}});</script>
 
   <!-- ============================================================== -->
   <!-- 1. HEADER NAVIGASI / TOPBAR UTAMA (Z-INDEX: 50 SESUAI SPESIFIKASI) -->
